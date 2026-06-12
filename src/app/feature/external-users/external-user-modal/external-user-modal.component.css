@@ -1,0 +1,137 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #FFFFFF;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.modal__header {
+  background-color: #DEE7E1;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #A1ADAD;
+}
+
+.modal__title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #000000;
+  margin: 0;
+}
+
+.modal__body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal__footer {
+  padding: 16px 24px 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  border-top: 1px solid #DEE7E1;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #000000;
+}
+
+.required {
+  color: #dc2626;
+  margin-left: 2px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #A1ADAD;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.form-input:focus {
+  border-color: #10C451;
+  box-shadow: 0 0 0 3px rgba(16, 196, 81, 0.15);
+}
+
+.form-input--error {
+  border-color: #dc2626;
+}
+
+.form-input--error:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+}
+
+.form-input--textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-input--select {
+  cursor: pointer;
+  background-color: #FFFFFF;
+}
+
+.form-error {
+  font-size: 0.78rem;
+  color: #dc2626;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* BOTÓN ACEPTAR */
+
+.btn--primary {
+  background-color: #10C451;
+  color: #FFFFFF;
+  border: none;
+}
+
+.btn--primary:hover {
+  background-color: #0EA548;
+}
+
+/* BOTÓN CANCELAR */
+
+.btn--secondary {
+  background-color: #FFFFFF;
+  color: #000000;
+  border: 1px solid #A1ADAD;
+}
+
+.btn--secondary:hover {
+  background-color: #F7F7F7;
+}
