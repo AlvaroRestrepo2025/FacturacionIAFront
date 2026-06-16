@@ -1,15 +1,26 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
+
+import { environment } from '../../../environments/environment';
 
 import { LogoutRecord } from '../../shared/models/logout-record.model';
 import { LogoutRequest } from '../../shared/models/logout-request.model';
 import { LogoutType } from '../../shared/models/logout-type.model';
+
+interface LogoutResponse {
+  exito: boolean;
+  mensaje: string;
+  idAuditoriaCierreSesion?: number | null;
+  fechaCierre?: string | null;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private readonly router = inject(Router);
+  private readonly http = inject(HttpClient);
 
   /*
    * Claves utilizadas para almacenar temporalmente
@@ -20,10 +31,12 @@ export class AuthService {
 
   /*
    * Registro temporal del último cierre de sesión.
-   * Se eliminará cuando el backend registre la auditoría.
+   * Se conserva para mostrar el mensaje visual en Login.
    */
   private readonly lastLogoutRecordKey =
     'facturacionia_last_logout';
+
+  private readonly logoutUrl = `${environment.apiUrl}/auth/logout`;
 
   /**
    * Guarda los datos principales de la sesión.
@@ -86,33 +99,59 @@ export class AuthService {
 
   /**
    * Inicia el proceso de cierre de sesión.
+   * Primero intenta registrar el cierre en backend.
+   * Luego limpia la sesión local y redirige al Login.
    */
   logout(type: LogoutType): void {
     const request: LogoutRequest = {
       tipoCierre: type
     };
 
-    const temporaryRecord: LogoutRecord = {
+    this.http.post<LogoutResponse>(
+      this.logoutUrl,
+      request
+    ).subscribe({
+      next: (response) => {
+        this.saveLogoutRecord(
+          type,
+          response.fechaCierre ?? new Date().toISOString()
+        );
+
+        this.finalizeLogout();
+      },
+      error: (error) => {
+        console.error(
+          'No fue posible registrar el cierre de sesión en backend:',
+          error
+        );
+
+        this.saveLogoutRecord(
+          type,
+          new Date().toISOString()
+        );
+
+        this.finalizeLogout();
+      }
+    });
+  }
+
+  /**
+   * Guarda el último cierre para que el Login
+   * pueda mostrar el mensaje correspondiente.
+   */
+  private saveLogoutRecord(
+    type: LogoutType,
+    fechaHoraUtc: string
+  ): void {
+    const logoutRecord: LogoutRecord = {
       tipoCierre: type,
-      fechaHoraUtc: new Date().toISOString()
+      fechaHoraUtc
     };
 
     localStorage.setItem(
       this.lastLogoutRecordKey,
-      JSON.stringify(temporaryRecord)
+      JSON.stringify(logoutRecord)
     );
-
-    console.info(
-      'Solicitud de cierre de sesión:',
-      request
-    );
-
-    console.info(
-      'Registro temporal del cierre:',
-      temporaryRecord
-    );
-
-    this.finalizeLogout();
   }
 
   /**
