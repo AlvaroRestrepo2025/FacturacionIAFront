@@ -7,11 +7,18 @@
 
     <header class="login-header">
       <p class="login-eyebrow">Facturación IA</p>
+
       <h1>Iniciar sesión</h1>
 
       <p class="login-description">
         Ingresa tus credenciales para acceder a la aplicación.
       </p>
+
+      @if (logoutMessage) {
+        <div class="logout-message">
+          <strong>{{ logoutMessage }}</strong>
+        </div>
+      }
     </header>
 
     <form class="login-form">
@@ -46,12 +53,12 @@
       </div>
 
       <button
-  class="btn btn-primary login-button"
-  type="button"
-  (click)="temporaryLogin()"
->
-  Ingresar
-</button>
+        class="btn btn-primary login-button"
+        type="button"
+        (click)="temporaryLogin()"
+      >
+        Ingresar
+      </button>
     </form>
   </section>
 </main>

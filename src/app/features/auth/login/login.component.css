@@ -112,6 +112,32 @@
   font-size: 14px;
 }
 
+/* Mensaje posterior al cierre de sesión */
+.logout-message {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  margin-top: var(--spacing-md);
+  padding: 12px 14px;
+
+  background-color: rgba(16, 212, 81, 0.12);
+  border: 1px solid rgba(16, 212, 81, 0.35);
+  border-radius: var(--radius-md);
+
+  color: var(--color-black);
+  font-size: 13px;
+}
+
+.logout-message strong {
+  font-weight: 700;
+}
+
+.logout-message span {
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
 /* Formulario */
 .login-form {
   width: 100%;

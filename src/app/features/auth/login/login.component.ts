@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AuthService } from '../../../core/services/auth.service';
+import { LogoutRecord } from '../../../shared/models/logout-record.model';
 
 @Component({
   selector: 'app-login',
@@ -13,6 +14,30 @@ import { AuthService } from '../../../core/services/auth.service';
 export class LoginComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+
+  /**
+   * Obtiene el último cierre registrado temporalmente.
+   */
+  get lastLogoutRecord(): LogoutRecord | null {
+    return this.authService.getLastLogoutRecord();
+  }
+
+  /**
+   * Mensaje visual según el último tipo de cierre.
+   */
+  get logoutMessage(): string | null {
+    const record = this.lastLogoutRecord;
+
+    if (!record) {
+      return null;
+    }
+
+    if (record.tipoCierre === 'Inactividad') {
+      return 'Tu sesión fue cerrada por inactividad.';
+    }
+
+    return 'Sesión cerrada correctamente.';
+  }
 
   /**
    * Crea una sesión temporal para probar la HU-002.
