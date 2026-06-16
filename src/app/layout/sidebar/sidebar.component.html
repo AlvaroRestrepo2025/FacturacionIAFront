@@ -1,0 +1,50 @@
+<aside class="sidebar">
+  <!-- Encabezado de marca -->
+  <header class="sidebar-header">
+    <div class="sidebar-brand">
+      <span class="brand-name">POSITIVO</span>
+      <span class="brand-symbol">S+</span>
+    </div>
+
+    <p class="sidebar-system-name">
+      Facturación IA
+    </p>
+  </header>
+
+  <!-- Información temporal del usuario -->
+  <section class="sidebar-user">
+    <div class="user-avatar" aria-hidden="true">
+      U
+    </div>
+
+    <div class="user-information">
+      <span class="user-name">Usuario</span>
+      <span class="user-role">Usuario del sistema</span>
+    </div>
+  </section>
+
+  <!-- Menú principal -->
+  <nav class="sidebar-navigation" aria-label="Navegación principal">
+    <p class="navigation-title">
+      Menú
+    </p>
+
+    <button class="navigation-item navigation-item-active" type="button">
+      <span class="navigation-icon" aria-hidden="true">⌂</span>
+      <span>Panel principal</span>
+    </button>
+  </nav>
+
+  <!-- Zona inferior del menú -->
+  <footer class="sidebar-footer">
+    <button
+  class="btn btn-logout logout-button"
+  type="button"
+  aria-label="Cerrar sesión"
+  (click)="logout()"
+>
+  <span class="logout-icon" aria-hidden="true">↪</span>
+  <span>Cerrar sesión</span>
+</button>
+  </footer>
+</aside>
