@@ -1,0 +1,170 @@
+/* =========================================================
+   LOGIN COMPONENT
+   Diseño visual basado en Positivo S+
+   ========================================================= */
+
+:host {
+  display: block;
+}
+
+/* Pantalla completa del inicio de sesión */
+.login-page {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 100vh;
+  padding: var(--spacing-lg);
+
+  background-color: var(--color-gray-light);
+  overflow: hidden;
+}
+
+/* Elemento decorativo verde */
+.login-page::before {
+  content: '';
+  position: absolute;
+  top: -120px;
+  left: -120px;
+
+  width: 300px;
+  height: 300px;
+
+  background-color: var(--color-primary);
+  border-radius: 40% 60% 55% 45%;
+  opacity: 0.18;
+}
+
+/* Elemento decorativo magenta */
+.login-page::after {
+  content: '';
+  position: absolute;
+  right: -120px;
+  bottom: -120px;
+
+  width: 320px;
+  height: 320px;
+
+  background-color: var(--color-secondary);
+  border-radius: 55% 45% 40% 60%;
+  opacity: 0.12;
+}
+
+/* Tarjeta principal */
+.login-card {
+  position: relative;
+  z-index: 1;
+
+  width: 100%;
+  max-width: 430px;
+
+  padding: 40px;
+
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+/* Nombre temporal de la marca */
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  margin-bottom: var(--spacing-xl);
+
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.brand-name {
+  color: var(--color-black);
+}
+
+.brand-symbol {
+  color: var(--color-primary);
+}
+
+/* Encabezado */
+.login-header {
+  margin-bottom: var(--spacing-lg);
+}
+
+.login-eyebrow {
+  margin-bottom: var(--spacing-sm);
+
+  color: var(--color-secondary);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.login-header h1 {
+  margin-bottom: var(--spacing-sm);
+}
+
+.login-description {
+  margin-bottom: 0;
+  font-size: 14px;
+}
+
+/* Mensaje posterior al cierre de sesión */
+.logout-message {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  margin-top: var(--spacing-md);
+  padding: 12px 14px;
+
+  background-color: rgba(16, 212, 81, 0.12);
+  border: 1px solid rgba(16, 212, 81, 0.35);
+  border-radius: var(--radius-md);
+
+  color: var(--color-black);
+  font-size: 13px;
+}
+
+.logout-message strong {
+  font-weight: 700;
+}
+
+.logout-message span {
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+/* Formulario */
+.login-form {
+  width: 100%;
+}
+
+/* Botón de ingreso */
+.login-button {
+  width: 100%;
+  margin-top: var(--spacing-sm);
+}
+
+/* Ajuste visual al presionar el botón */
+.login-button:active {
+  transform: translateY(0);
+}
+
+/* Adaptación para pantallas pequeñas */
+@media (max-width: 480px) {
+  .login-page {
+    padding: var(--spacing-md);
+  }
+
+  .login-card {
+    padding: 28px 22px;
+  }
+
+  .login-brand {
+    margin-bottom: var(--spacing-lg);
+  }
+}

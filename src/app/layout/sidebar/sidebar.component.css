@@ -1,0 +1,228 @@
+/* =========================================================
+   SIDEBAR COMPONENT
+   Menú lateral de las pantallas protegidas
+   HU-002 - Cierre de sesión
+   ========================================================= */
+
+:host {
+  display: block;
+  flex-shrink: 0;
+}
+
+/* Contenedor principal del menú lateral */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+
+  width: var(--sidebar-width);
+  min-height: 100vh;
+  padding: var(--spacing-lg);
+
+  background-color: var(--color-white);
+  border-right: 1px solid var(--color-border);
+}
+
+/* =========================================================
+   ENCABEZADO DE MARCA
+   ========================================================= */
+
+.sidebar-header {
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.brand-name {
+  color: var(--color-black);
+}
+
+.brand-symbol {
+  color: var(--color-primary);
+}
+
+.sidebar-system-name {
+  margin: var(--spacing-sm) 0 0;
+
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* =========================================================
+   INFORMACIÓN DEL USUARIO
+   ========================================================= */
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-top: var(--spacing-lg);
+  padding: 14px;
+
+  background-color: var(--color-gray-light);
+  border-radius: var(--radius-md);
+}
+
+.user-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 42px;
+  height: 42px;
+
+  background-color: var(--color-primary);
+  border-radius: 50%;
+
+  color: var(--color-black);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.user-information {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.user-name {
+  overflow: hidden;
+
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-role {
+  overflow: hidden;
+
+  color: var(--color-text-muted);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   NAVEGACIÓN
+   ========================================================= */
+
+.sidebar-navigation {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+
+  margin-top: var(--spacing-lg);
+}
+
+.navigation-title {
+  margin: 0 0 var(--spacing-sm);
+  padding-left: var(--spacing-sm);
+
+  color: var(--color-gray-medium);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.navigation-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+
+  background-color: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+
+  color: var(--color-text-muted);
+  font-family: var(--font-family-base);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.navigation-item:hover {
+  background-color: var(--color-gray-light);
+  color: var(--color-black);
+}
+
+.navigation-item-active {
+  background-color: rgba(16, 212, 81, 0.14);
+  color: var(--color-black);
+}
+
+.navigation-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 22px;
+  height: 22px;
+
+  font-size: 18px;
+}
+
+/* =========================================================
+   ZONA INFERIOR Y CIERRE DE SESIÓN
+   ========================================================= */
+
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
+}
+
+.logout-button {
+  justify-content: flex-start;
+  min-height: 46px;
+  padding: 10px 14px;
+}
+
+.logout-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 22px;
+  height: 22px;
+
+  font-size: 18px;
+}
+
+/* =========================================================
+   ADAPTACIÓN BÁSICA
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 220px;
+    padding: var(--spacing-md);
+  }
+
+  .sidebar-system-name,
+  .user-role {
+    font-size: 10px;
+  }
+}
