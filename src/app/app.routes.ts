@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { authGuard } from './core/guards/auth.guard';
+import { facturacionGuard } from './core/guards/facturacion.guard';
 import { guestGuard } from './core/guards/guest.guard';
 
 export const routes: Routes = [
@@ -23,6 +24,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/dashboard/dashboard.component')
             .then((component) => component.DashboardComponent)
+      },
+      {
+        path: 'empresas',
+        canActivate: [facturacionGuard],
+        loadComponent: () =>
+          import('./features/empresas/empresas.component')
+            .then((component) => component.EmpresasComponent)
       }
     ]
   },

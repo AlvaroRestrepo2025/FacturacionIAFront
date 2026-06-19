@@ -19,7 +19,7 @@
 
     <div class="user-information">
       <span class="user-name">Usuario</span>
-      <span class="user-role">Usuario del sistema</span>
+      <span class="user-role">Área de Facturación</span>
     </div>
   </section>
 
@@ -29,22 +29,39 @@
       Menú
     </p>
 
-    <button class="navigation-item navigation-item-active" type="button">
+    <button
+      class="navigation-item"
+      type="button"
+      routerLink="/dashboard"
+      routerLinkActive="navigation-item-active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
       <span class="navigation-icon" aria-hidden="true">⌂</span>
       <span>Panel principal</span>
+    </button>
+
+    <button
+      *ngIf="mostrarMenuEmpresas"
+      class="navigation-item"
+      type="button"
+      routerLink="/dashboard/empresas"
+      routerLinkActive="navigation-item-active"
+    >
+      <span class="navigation-icon" aria-hidden="true">▦</span>
+      <span>Empresas</span>
     </button>
   </nav>
 
   <!-- Zona inferior del menú -->
   <footer class="sidebar-footer">
     <button
-  class="btn btn-logout logout-button"
-  type="button"
-  aria-label="Cerrar sesión"
-  (click)="logout()"
->
-  <span class="logout-icon" aria-hidden="true">↪</span>
-  <span>Cerrar sesión</span>
-</button>
+      class="btn btn-logout logout-button"
+      type="button"
+      aria-label="Cerrar sesión"
+      (click)="logout()"
+    >
+      <span class="logout-icon" aria-hidden="true">↪</span>
+      <span>Cerrar sesión</span>
+    </button>
   </footer>
 </aside>

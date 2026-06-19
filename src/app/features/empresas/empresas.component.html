@@ -1,0 +1,314 @@
+<section class="empresas-page">
+  <div class="empresas-header">
+    <div></div>
+
+    <h1>Empresas</h1>
+
+    <button
+      class="btn-secondary"
+      type="button"
+      (click)="volverAlPanelPrincipal()"
+    >
+      Atrás
+    </button>
+  </div>
+
+  <div class="empresas-actions">
+    <button
+  class="btn-primary"
+  type="button"
+  (click)="abrirModalCrear()"
+>
+  Nuevo
+</button>
+
+    <div class="search-group">
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Buscar"
+        [(ngModel)]="busqueda"
+        (keyup.enter)="buscarEmpresas()"
+      />
+
+      <button
+        class="btn-secondary"
+        type="button"
+        (click)="buscarEmpresas()"
+      >
+        Buscar
+      </button>
+
+      <button
+        class="btn-secondary"
+        type="button"
+        (click)="limpiarBusqueda()"
+      >
+        Limpiar
+      </button>
+    </div>
+  </div>
+
+  <p
+    *ngIf="mensaje !== ''"
+    class="status-message"
+  >
+    {{ mensaje }}
+  </p>
+
+  <div class="table-container">
+    <table class="empresas-table">
+      <thead>
+        <tr>
+          <th>Nit</th>
+          <th>Razón Social</th>
+          <th>Dirección</th>
+          <th>Cliente</th>
+          <th>Teléfono</th>
+          <th>Comercial Positivo</th>
+          <th>Supervisor</th>
+          <th>CR</th>
+          <th>Ciudad</th>
+          <th>Moneda</th>
+          <th>Usuario Creación</th>
+          <th>Fecha Creación</th>
+          <th>Usuario Modificación</th>
+          <th>Fecha Modificación</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngIf="cargando">
+          <td colspan="16" class="empty-table">
+            Cargando empresas...
+          </td>
+        </tr>
+
+        <tr *ngIf="!cargando && empresas.length === 0">
+          <td colspan="16" class="empty-table">
+            Aún no se han cargado empresas.
+          </td>
+        </tr>
+
+        <tr *ngFor="let empresa of empresas">
+          <td>{{ empresa.nit }}</td>
+          <td>{{ empresa.razonSocial }}</td>
+          <td>{{ empresa.direccion }}</td>
+          <td>{{ empresa.cliente }}</td>
+          <td>{{ empresa.telefono }}</td>
+          <td>{{ empresa.comercialPositivo }}</td>
+          <td>{{ empresa.supervisor }}</td>
+          <td>{{ empresa.cr }}</td>
+          <td>{{ empresa.ciudad }}</td>
+          <td>{{ empresa.moneda }}</td>
+          <td>{{ empresa.usuarioCreacion }}</td>
+          <td>{{ empresa.fechaCreacion | date: 'yyyy-MM-dd HH:mm' }}</td>
+          <td>{{ empresa.usuarioModificacion || '-' }}</td>
+          <td>
+            {{
+              empresa.fechaModificacion
+                ? (empresa.fechaModificacion | date: 'yyyy-MM-dd HH:mm')
+                : '-'
+            }}
+          </td>
+          <td>
+            <span
+              class="status-badge"
+              [class.status-active]="empresa.estado"
+              [class.status-inactive]="!empresa.estado"
+            >
+              {{ obtenerTextoEstado(empresa.estado) }}
+            </span>
+          </td>
+          <td>
+            <button
+  class="btn-table"
+  type="button"
+  (click)="abrirModalEditar(empresa)"
+>
+  Editar
+</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="paginator">
+    <button
+      class="btn-secondary"
+      type="button"
+      [disabled]="pagina <= 1 || cargando"
+      (click)="paginaAnterior()"
+    >
+      Anterior
+    </button>
+
+    <span>
+      Página {{ pagina }} de {{ totalPaginas }}
+    </span>
+
+    <button
+      class="btn-secondary"
+      type="button"
+      [disabled]="!tienePaginaSiguiente || cargando"
+      (click)="paginaSiguiente()"
+    >
+      Siguiente
+    </button>
+  </div>
+  <div
+  class="modal-backdrop"
+  *ngIf="mostrarModal"
+>
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>
+        {{ modoFormulario === 'crear' ? 'Crear empresa' : 'Editar empresa' }}
+      </h2>
+
+      <button
+        class="modal-close"
+        type="button"
+        aria-label="Cerrar modal"
+        (click)="cancelarModal()"
+      >
+        ×
+      </button>
+    </div>
+
+    <p
+      *ngIf="mensajeFormulario !== ''"
+      class="form-message"
+    >
+      {{ mensajeFormulario }}
+    </p>
+
+    <form class="empresa-form">
+      <div class="form-grid">
+        <label>
+          Nit
+          <input
+            type="text"
+            [(ngModel)]="formularioEmpresa.nit"
+            name="nit"
+          />
+        </label>
+
+        <label>
+          Razón Social
+          <input
+            type="text"
+            [(ngModel)]="formularioEmpresa.razonSocial"
+            name="razonSocial"
+          />
+        </label>
+
+        <label>
+          Dirección
+          <input
+            type="text"
+            [(ngModel)]="formularioEmpresa.direccion"
+            name="direccion"
+          />
+        </label>
+
+        <label>
+          Cliente
+          <input
+            type="text"
+            [(ngModel)]="formularioEmpresa.cliente"
+            name="cliente"
+          />
+        </label>
+
+        <label>
+          Teléfono
+          <input
+            type="text"
+            [(ngModel)]="formularioEmpresa.telefono"
+            name="telefono"
+          />
+        </label>
+
+        <label>
+          Comercial Positivo
+          <input
+            type="text"
+            [(ngModel)]="formularioEmpresa.comercialPositivo"
+            name="comercialPositivo"
+          />
+        </label>
+
+        <label>
+          Supervisor
+          <input
+            type="text"
+            [(ngModel)]="formularioEmpresa.supervisor"
+            name="supervisor"
+          />
+        </label>
+
+        <label>
+          CR
+          <input
+            type="text"
+            [(ngModel)]="formularioEmpresa.cr"
+            name="cr"
+          />
+        </label>
+
+        <label>
+          Ciudad
+          <input
+            type="text"
+            [(ngModel)]="formularioEmpresa.ciudad"
+            name="ciudad"
+          />
+        </label>
+
+        <label>
+          Moneda
+          <input
+            type="text"
+            [(ngModel)]="formularioEmpresa.moneda"
+            name="moneda"
+          />
+        </label>
+
+        <label *ngIf="modoFormulario === 'editar'">
+          Estado
+          <select
+            [(ngModel)]="formularioEmpresa.estado"
+            name="estado"
+          >
+            <option [ngValue]="true">Activo</option>
+            <option [ngValue]="false">Inactivo</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button
+          class="btn-secondary"
+          type="button"
+          (click)="cancelarModal()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          class="btn-primary"
+          type="button"
+          [disabled]="guardando"
+          (click)="guardarEmpresa()"
+        >
+          {{ guardando ? 'Guardando...' : 'Aceptar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+</section>

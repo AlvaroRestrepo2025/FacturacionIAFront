@@ -47,9 +47,10 @@ export class LoginComponent {
    */
   temporaryLogin(): void {
     const temporaryUser = {
-      name: 'Usuario',
-      role: 'Usuario del sistema'
-    };
+  name: 'Usuario',
+  role: 'Usuario del sistema',
+  area: 'Facturacion'
+};
 
     this.authService.saveSession(
       'token-temporal-facturacionia',

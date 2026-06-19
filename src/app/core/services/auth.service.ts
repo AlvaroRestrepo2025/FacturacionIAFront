@@ -65,6 +65,50 @@ export class AuthService {
     return localStorage.getItem(this.tokenKey);
   }
 
+    /**
+   * Obtiene la información del usuario almacenado
+   * en la sesión temporal del navegador.
+   */
+  getCurrentUser(): { name?: string; role?: string; area?: string } | null {
+    const storedUser = localStorage.getItem(this.userKey);
+
+    if (!storedUser) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(storedUser) as {
+        name?: string;
+        role?: string;
+        area?: string;
+      };
+    } catch {
+      localStorage.removeItem(this.userKey);
+      return null;
+    }
+  }
+
+  /**
+   * Valida si el usuario pertenece al área de Facturación.
+   *
+   * Se usa para proteger el acceso a la pantalla Empresas
+   * de la HU-005.
+   */
+  isFacturacionUser(): boolean {
+    const user = this.getCurrentUser();
+
+    if (!user?.area) {
+      return false;
+    }
+
+    const normalizedArea = user.area
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+
+    return normalizedArea === 'facturacion';
+  }
   /**
    * Obtiene el último registro temporal de cierre.
    */
