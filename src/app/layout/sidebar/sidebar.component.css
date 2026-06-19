@@ -60,7 +60,7 @@
 }
 
 .sidebar__link--active:hover {
-  background-color: #1d4ed8;
+  background-color:#0ea548;
 }
 
 .sidebar__icon {
@@ -71,4 +71,48 @@
 
 .sidebar__label {
   line-height: 1.4;
+}
+
+.sidebar {
+  transition: width 0.35s ease-in-out;
+}
+
+.sidebar--collapsed {
+  width: 56px;
+  min-width: 56px;
+}
+
+.sidebar__logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sidebar__toggle {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar__toggle:hover {
+  opacity: 0.8;
+}
+
+.sidebar--collapsed .sidebar__logo {
+  padding: 24px 12px;
+  justify-content: center;
+}
+
+.sidebar--collapsed .sidebar__menu-item {
+  padding: 2px 4px;
+}
+
+.sidebar--collapsed .sidebar__link {
+  justify-content: center;
+  padding: 10px 0;
 }

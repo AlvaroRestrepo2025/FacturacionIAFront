@@ -122,7 +122,7 @@
 
 .eu-table th {
   padding: 12px 16px;
-  text-align: left;
+  text-align: center;
   font-weight: 600;
   color: #000000;
   white-space: nowrap;
@@ -145,6 +145,8 @@
   padding: 12px 16px;
   color: #4b5563;
   white-space: nowrap;
+  text-align: center;
+  vertical-align: middle;
 }
 
 .eu-table__empty {
@@ -155,7 +157,9 @@
 }
 
 .badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 3px 10px;
   border-radius: 20px;
   font-size: 0.78rem;
@@ -172,21 +176,24 @@
   color: #666;
 }
 
-.btn-action {
-  background: none;
-  border: 1px solid #10C451;
-  border-radius: 6px;
-  padding: 5px 12px;
-  font-size: 0.8rem;
-  cursor: pointer;
-  color: #10C451;
-  transition: background 0.15s, border-color 0.15s;
+.actions-cell {
+  text-align: center;
+  vertical-align: middle;
 }
 
-.btn-action:hover {
-  background-color: #10C451;
-  color: white;
-  border-color: #9ca3af;
+.action-icon {
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-icon--edit {
+  color: #10C451;
+}
+
+.action-icon--edit:hover {
+  color: #0ea548;
+  transform: scale(1.15);
 }
 
 .paginator {
