@@ -1,0 +1,75 @@
+<div class="modal-overlay" (click)="onCancelar()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal__header">
+      <h2 class="modal__title">{{ title }}</h2>
+    </div>
+
+    <div class="modal__body">
+      <!-- Nombre -->
+      <div class="form-group">
+        <label class="form-label">Nombre <span class="required">*</span></label>
+        <input
+          type="text"
+          class="form-input"
+          [class.form-input--error]="errors.nombre"
+          placeholder="Ingrese el nombre"
+          [(ngModel)]="form.nombre"
+        />
+        @if (errors.nombre) {
+          <span class="form-error">{{ errors.nombre }}</span>
+        }
+      </div>
+
+      <!-- Correo -->
+      <div class="form-group">
+        <label class="form-label">Correo <span class="required">*</span></label>
+        <input
+          type="email"
+          class="form-input"
+          [class.form-input--error]="errors.correo"
+          placeholder="Ingrese el correo electrónico"
+          [(ngModel)]="form.correo"
+        />
+        @if (errors.correo) {
+          <span class="form-error">{{ errors.correo }}</span>
+        }
+      </div>
+
+      <!-- Notas -->
+      <div class="form-group">
+        <label class="form-label">Notas <span class="required">*</span></label>
+        <textarea
+          class="form-input form-input--textarea"
+          [class.form-input--error]="errors.notas"
+          placeholder="Ingrese las notas"
+          rows="3"
+          [(ngModel)]="form.notas"
+        ></textarea>
+        @if (errors.notas) {
+          <span class="form-error">{{ errors.notas }}</span>
+        }
+      </div>
+
+      <!-- Estado (solo en edición) -->
+      @if (mode === "editar") {
+        <div class="form-group">
+          <label class="form-label">Estado</label>
+          <select
+            class="form-input form-input--select"
+            [(ngModel)]="form.estado"
+          >
+            <option [ngValue]="true">Activo</option>
+
+            <option [ngValue]="false">Inactivo</option>
+          </select>
+        </div>
+      }
+    </div>
+
+    <div class="modal__footer">
+      <button class="btn btn-outline" (click)="onCancelar()">Cancelar</button>
+
+      <button class="btn btn-primary" (click)="onAceptar()">Aceptar</button>
+    </div>
+  </div>
+</div>
