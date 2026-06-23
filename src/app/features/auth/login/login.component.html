@@ -1,14 +1,25 @@
 <main class="login-page">
   <section class="login-card">
+
     <div class="login-brand">
-      <span class="brand-name">POSITIVO</span>
-      <span class="brand-symbol">S+</span>
+      <span class="brand-name">
+        POSITIVO
+      </span>
+
+      <span class="brand-symbol">
+        S+
+      </span>
     </div>
 
     <header class="login-header">
-      <p class="login-eyebrow">Facturación IA</p>
 
-      <h1>Iniciar sesión</h1>
+      <p class="login-eyebrow">
+        Facturación IA
+      </p>
+
+      <h1>
+        Iniciar sesión
+      </h1>
 
       <p class="login-description">
         Ingresa tus credenciales para acceder a la aplicación.
@@ -16,15 +27,26 @@
 
       @if (logoutMessage) {
         <div class="logout-message">
-          <strong>{{ logoutMessage }}</strong>
+          <strong>
+            {{ logoutMessage }}
+          </strong>
         </div>
       }
+
     </header>
 
-    <form class="login-form">
+    <form
+      class="login-form"
+      (ngSubmit)="login()">
+
       <div class="form-group">
-        <label class="form-label" for="username">
+
+        <label
+          class="form-label"
+          for="username">
+
           Usuario
+
         </label>
 
         <input
@@ -34,12 +56,19 @@
           name="username"
           placeholder="Ingresa tu usuario"
           autocomplete="username"
-        />
+          [(ngModel)]="usuario"
+          required />
+
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="password">
+
+        <label
+          class="form-label"
+          for="password">
+
           Contraseña
+
         </label>
 
         <input
@@ -49,16 +78,23 @@
           name="password"
           placeholder="Ingresa tu contraseña"
           autocomplete="current-password"
-        />
+          [(ngModel)]="password"
+          required />
+
       </div>
 
       <button
         class="btn btn-primary login-button"
-        type="button"
-        (click)="temporaryLogin()"
-      >
-        Ingresar
+        type="submit"
+        [disabled]="cargando">
+
+        {{ cargando
+          ? 'Ingresando...'
+          : 'Ingresar' }}
+
       </button>
+
     </form>
+
   </section>
 </main>
