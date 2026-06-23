@@ -69,7 +69,14 @@
     <div class="modal__footer">
       <button class="btn btn-outline" (click)="onCancelar()">Cancelar</button>
 
-      <button class="btn btn-primary" (click)="onAceptar()">Aceptar</button>
+      <button
+        class="btn btn-primary"
+        (click)="onAceptar()"
+        [disabled]="isSaving">
+
+        {{ isSaving ? 'Guardando...' : 'Aceptar' }}
+
+      </button>
     </div>
   </div>
 </div>

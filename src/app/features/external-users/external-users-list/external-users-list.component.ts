@@ -21,6 +21,7 @@ export class ExternalUsersListComponent implements OnInit {
   searchText = '';
   currentPage = 1;
   pageSize = 10;
+  isSaving = false;
 
   isModalOpen = false;
   modalMode: 'crear' | 'editar' = 'crear';
@@ -107,6 +108,12 @@ export class ExternalUsersListComponent implements OnInit {
 
   onModalSave(user: any): void {
 
+    if (this.isSaving) {
+      return;
+    }
+
+    this.isSaving = true;
+
     if (this.modalMode === 'crear') {
 
       const nuevoUsuario = {
@@ -120,6 +127,8 @@ export class ExternalUsersListComponent implements OnInit {
         .subscribe({
           next: () => {
 
+            this.isSaving = false;
+
             this.isModalOpen = false;
 
             this.cargarUsuarios();
@@ -127,7 +136,11 @@ export class ExternalUsersListComponent implements OnInit {
             alert('Usuario creado correctamente');
           },
           error: (error) => {
+
+            this.isSaving = false;
+
             console.error(error);
+
             alert('Error creando usuario');
           }
         });
@@ -148,6 +161,8 @@ export class ExternalUsersListComponent implements OnInit {
       .subscribe({
         next: () => {
 
+          this.isSaving = false;
+
           this.isModalOpen = false;
 
           this.cargarUsuarios();
@@ -155,7 +170,11 @@ export class ExternalUsersListComponent implements OnInit {
           alert('Usuario actualizado correctamente');
         },
         error: (error) => {
+
+          this.isSaving = false;
+
           console.error(error);
+
           alert('Error actualizando usuario');
         }
       });

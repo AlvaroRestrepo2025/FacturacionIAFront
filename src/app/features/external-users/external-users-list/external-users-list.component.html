@@ -141,6 +141,7 @@
   <app-external-user-modal
     [mode]="modalMode"
     [user]="selectedUser"
+    [isSaving]="isSaving"
     (closeModal)="onModalClose()"
     (saveModal)="onModalSave($event)"
   />

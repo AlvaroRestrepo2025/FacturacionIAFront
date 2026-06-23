@@ -14,6 +14,7 @@ export class ExternalUserModalComponent implements OnInit {
 
   @Input() mode: 'crear' | 'editar' = 'crear';
   @Input() user: ExternalUser | null = null;
+  @Input() isSaving = false;
 
   @Output() closeModal = new EventEmitter<void>();
   @Output() saveModal = new EventEmitter<any>();
@@ -85,6 +86,10 @@ export class ExternalUserModalComponent implements OnInit {
   }
 
   onAceptar(): void {
+
+    if (this.isSaving) {
+      return;
+    }
 
     if (!this.validate()) {
       return;
