@@ -1,12 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 
 import { LogoutRecord } from '../../shared/models/logout-record.model';
 import { LogoutRequest } from '../../shared/models/logout-request.model';
 import { LogoutType } from '../../shared/models/logout-type.model';
+
+import { SessionService } from './session.service';
 
 interface LogoutResponse {
   exito: boolean;
@@ -19,98 +22,190 @@ interface LogoutResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly router = inject(Router);
   private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
+  private readonly sessionService = inject(SessionService);
 
-  /*
-   * Claves utilizadas para almacenar temporalmente
-   * la información de autenticación.
-   */
-  private readonly tokenKey = 'facturacionia_token';
-  private readonly userKey = 'facturacionia_user';
+  private readonly apiAuth = environment.apiAuth;
 
-  /*
-   * Registro temporal del último cierre de sesión.
-   * Se conserva para mostrar el mensaje visual en Login.
-   */
+  private readonly logoutUrl =
+    `${environment.apiUrl}/auth/logout`;
+
   private readonly lastLogoutRecordKey =
     'facturacionia_last_logout';
 
-  private readonly logoutUrl = `${environment.apiUrl}/auth/logout`;
-
   /**
-   * Guarda los datos principales de la sesión.
+   * Login principal contra LDAP.
    */
-  saveSession(token: string, user: unknown): void {
-    localStorage.setItem(this.tokenKey, token);
-    localStorage.setItem(
-      this.userKey,
-      JSON.stringify(user)
+  loginLDAP(
+    usuario: string,
+    password: string
+  ): Observable<any> {
+    const url = `${this.apiAuth}/AccesoDirectorioActivo`;
+
+    console.log('URL LDAP:', url);
+
+    return this.http.post(
+      url,
+      {
+        Credenciales: {
+          Usuario: usuario,
+          Contrasena: password
+        }
+      }
     );
   }
 
   /**
-   * Comprueba si existe un token de autenticación.
+   * Login de contingencia contra base de datos local.
+   */
+  loginLocal(
+    usuario: string,
+    password: string
+  ): Observable<any> {
+    const url = `${this.apiAuth}/AccesoLogginLocal`;
+
+    console.log('URL Login Local:', url);
+
+    return this.http.post(
+      url,
+      {
+        Credenciales: {
+          Usuario: usuario,
+          Contrasena: password
+        }
+      }
+    );
+  }
+
+  /**
+   * Registra usuario.
+   */
+  registrarUsuario(
+    usuario: any
+  ): Observable<any> {
+    return this.http.post(
+      `${this.apiAuth}/RegistrarUsuario`,
+      usuario
+    );
+  }
+
+  /**
+   * Guarda la sesión actual.
+   */
+  saveSession(
+    token: string | null,
+    usuario: any,
+    perfil = 'UsuarioInterno'
+  ): void {
+    this.sessionService.saveSession(
+      token,
+      usuario,
+      perfil
+    );
+  }
+
+  /**
+   * Método de compatibilidad para login temporal.
+   */
+  login(
+    token: string | null,
+    usuario: any
+  ): void {
+    this.saveSession(
+      token,
+      usuario,
+      'UsuarioInterno'
+    );
+  }
+
+  /**
+   * Verifica si existe una sesión activa.
    */
   isAuthenticated(): boolean {
-    const token = localStorage.getItem(this.tokenKey);
-
-    return token !== null && token.trim() !== '';
+    return this.sessionService.isAuthenticated();
   }
 
   /**
-   * Retorna el token almacenado.
+   * Obtiene el token almacenado.
    */
   getToken(): string | null {
-    return localStorage.getItem(this.tokenKey);
-  }
-
-    /**
-   * Obtiene la información del usuario almacenado
-   * en la sesión temporal del navegador.
-   */
-  getCurrentUser(): { name?: string; role?: string; area?: string } | null {
-    const storedUser = localStorage.getItem(this.userKey);
-
-    if (!storedUser) {
-      return null;
-    }
-
-    try {
-      return JSON.parse(storedUser) as {
-        name?: string;
-        role?: string;
-        area?: string;
-      };
-    } catch {
-      localStorage.removeItem(this.userKey);
-      return null;
-    }
+    return this.sessionService.getToken();
   }
 
   /**
-   * Valida si el usuario pertenece al área de Facturación.
+   * Obtiene el usuario almacenado.
+   */
+  getUser(): any {
+    return this.sessionService.getUser();
+  }
+
+  /**
+   * Obtiene la información del usuario actual.
+   */
+  getCurrentUser(): any {
+    return this.getUser();
+  }
+
+  /**
+   * Limpia la sesión.
+   */
+  clearSession(): void {
+    this.sessionService.clearSession();
+  }
+
+  /**
+   * Valida si el usuario actual pertenece al área de Facturación.
    *
-   * Se usa para proteger el acceso a la pantalla Empresas
-   * de la HU-005.
+   * Se usa para proteger la pantalla Empresas de la HU-005.
    */
   isFacturacionUser(): boolean {
-    const user = this.getCurrentUser();
+    const usuario = this.getCurrentUser();
 
-    if (!user?.area) {
-      return false;
-    }
+    return this.perteneceFacturacion(usuario);
+  }
 
-    const normalizedArea = user.area
+  /**
+   * Valida si un usuario pertenece al área de Facturación.
+   */
+  perteneceFacturacion(
+    usuario: any
+  ): boolean {
+    console.log('Objeto recibido:', usuario);
+
+    const area =
+      usuario?.area ||
+      usuario?.Area ||
+      usuario?.Department ||
+      usuario?.department ||
+      usuario?.Departamento ||
+      usuario?.departamento ||
+      usuario?.Cargo ||
+      usuario?.cargo ||
+      usuario?.Descripcion ||
+      usuario?.descripcion ||
+      '';
+
+    console.log('Área encontrada:', area);
+
+    const areaNormalizada = area
+      .toString()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
+      .toUpperCase()
       .trim();
 
-    return normalizedArea === 'facturacion';
+    console.log('Área normalizada:', areaNormalizada);
+
+    const pertenece = areaNormalizada.includes('FACTURACION');
+
+    console.log('Pertenece a Facturación:', pertenece);
+
+    return pertenece;
   }
+
   /**
-   * Obtiene el último registro temporal de cierre.
+   * Obtiene el último cierre registrado.
    */
   getLastLogoutRecord(): LogoutRecord | null {
     const storedRecord = localStorage.getItem(
@@ -124,29 +219,20 @@ export class AuthService {
     try {
       return JSON.parse(storedRecord) as LogoutRecord;
     } catch {
-      localStorage.removeItem(this.lastLogoutRecordKey);
+      localStorage.removeItem(
+        this.lastLogoutRecordKey
+      );
+
       return null;
     }
   }
 
   /**
-   * Elimina las credenciales temporales
-   * almacenadas por el frontend.
+   * Cierre de sesión.
    */
-  clearSession(): void {
-    localStorage.removeItem(this.tokenKey);
-    localStorage.removeItem(this.userKey);
-
-    sessionStorage.removeItem(this.tokenKey);
-    sessionStorage.removeItem(this.userKey);
-  }
-
-  /**
-   * Inicia el proceso de cierre de sesión.
-   * Primero intenta registrar el cierre en backend.
-   * Luego limpia la sesión local y redirige al Login.
-   */
-  logout(type: LogoutType): void {
+  logout(
+    type: LogoutType
+  ): void {
     const request: LogoutRequest = {
       tipoCierre: type
     };
@@ -165,7 +251,7 @@ export class AuthService {
       },
       error: (error) => {
         console.error(
-          'No fue posible registrar el cierre de sesión en backend:',
+          'No fue posible registrar el cierre:',
           error
         );
 
@@ -180,8 +266,7 @@ export class AuthService {
   }
 
   /**
-   * Guarda el último cierre para que el Login
-   * pueda mostrar el mensaje correspondiente.
+   * Guarda último cierre.
    */
   private saveLogoutRecord(
     type: LogoutType,
@@ -199,14 +284,16 @@ export class AuthService {
   }
 
   /**
-   * Finaliza la sesión en el navegador
-   * y redirige al usuario al Login.
+   * Finaliza la sesión.
    */
   private finalizeLogout(): void {
-    this.clearSession();
+    this.sessionService.clearSession();
 
-    void this.router.navigateByUrl('/login', {
-      replaceUrl: true
-    });
+    void this.router.navigateByUrl(
+      '/login',
+      {
+        replaceUrl: true
+      }
+    );
   }
 }
