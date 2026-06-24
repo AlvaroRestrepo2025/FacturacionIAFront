@@ -86,11 +86,15 @@
           </td>
         </tr>
 
-        <tr *ngIf="!cargando && empresas.length === 0">
-          <td colspan="16" class="empty-table">
-            Aún no se han cargado empresas.
-          </td>
-        </tr>
+       <tr *ngIf="!cargando && empresas.length === 0">
+  <td colspan="16" class="empty-table">
+    {{
+      busqueda.trim() !== ''
+        ? 'No se encontraron empresas con el criterio de búsqueda.'
+        : 'Aún no se han cargado empresas.'
+    }}
+  </td>
+</tr> 
 
         <tr *ngFor="let empresa of empresas">
           <td>{{ empresa.nit }}</td>
