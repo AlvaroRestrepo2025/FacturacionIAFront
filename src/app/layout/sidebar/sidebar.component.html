@@ -29,7 +29,7 @@
     @if (!isCollapsed) {
       <div class="user-information">
         <span class="user-name">Usuario</span>
-        <span class="user-role">Usuario del sistema</span>
+        <span class="user-role">Área de Facturación</span>
       </div>
     }
   </section>
@@ -49,10 +49,27 @@
       <span class="navigation-icon">
         <i class="bi bi-grid-1x2-fill"></i>
       </span>
+
       @if (!isCollapsed) {
         <span>Panel principal</span>
       }
     </a>
+
+    @if (mostrarMenuEmpresas) {
+      <a
+        class="navigation-item"
+        routerLink="/dashboard/empresas"
+        routerLinkActive="navigation-item-active"
+      >
+        <span class="navigation-icon">
+          <i class="bi bi-building"></i>
+        </span>
+
+        @if (!isCollapsed) {
+          <span>Empresas</span>
+        }
+      </a>
+    }
 
     <a
       class="navigation-item"
@@ -62,6 +79,7 @@
       <span class="navigation-icon">
         <i class="bi bi-people-fill"></i>
       </span>
+
       @if (!isCollapsed) {
         <span>Gestión de usuarios externos</span>
       }
@@ -79,6 +97,7 @@
       <span class="logout-icon">
         <i class="bi bi-box-arrow-right"></i>
       </span>
+
       @if (!isCollapsed) {
         <span>Cerrar sesión</span>
       }

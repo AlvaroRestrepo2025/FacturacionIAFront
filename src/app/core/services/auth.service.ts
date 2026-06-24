@@ -1,39 +1,15 @@
-import {
-  HttpClient
-} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 
-import {
-  Injectable,
-  inject
-} from '@angular/core';
+import { environment } from '../../../environments/environment';
 
-import {
-  Router
-} from '@angular/router';
+import { LogoutRecord } from '../../shared/models/logout-record.model';
+import { LogoutRequest } from '../../shared/models/logout-request.model';
+import { LogoutType } from '../../shared/models/logout-type.model';
 
-import {
-  Observable
-} from 'rxjs';
-
-import {
-  environment
-} from '../../../environments/environment';
-
-import {
-  LogoutRecord
-} from '../../shared/models/logout-record.model';
-
-import {
-  LogoutRequest
-} from '../../shared/models/logout-request.model';
-
-import {
-  LogoutType
-} from '../../shared/models/logout-type.model';
-
-import {
-  SessionService
-} from './session.service';
+import { SessionService } from './session.service';
 
 interface LogoutResponse {
   exito: boolean;
@@ -46,40 +22,28 @@ interface LogoutResponse {
   providedIn: 'root'
 })
 export class AuthService {
+  private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
+  private readonly sessionService = inject(SessionService);
 
-  private readonly http =
-    inject(HttpClient);
-
-  private readonly router =
-    inject(Router);
-
-  private readonly sessionService =
-    inject(SessionService);
-
-  private readonly apiAuth =
-    environment.apiAuth;
+  private readonly apiAuth = environment.apiAuth;
 
   private readonly logoutUrl =
-    `${environment.apiAuth}/auth/logout`;
+    `${environment.apiUrl}/auth/logout`;
 
   private readonly lastLogoutRecordKey =
     'facturacionia_last_logout';
 
   /**
-   * LOGIN LDAP
+   * Login principal contra LDAP.
    */
   loginLDAP(
     usuario: string,
     password: string
   ): Observable<any> {
+    const url = `${this.apiAuth}/AccesoDirectorioActivo`;
 
-    const url =
-      `${this.apiAuth}/AccesoDirectorioActivo`;
-
-    console.log(
-      'URL LDAP:',
-      url
-    );
+    console.log('URL LDAP:', url);
 
     return this.http.post(
       url,
@@ -93,20 +57,15 @@ export class AuthService {
   }
 
   /**
-   * LOGIN LOCAL
+   * Login de contingencia contra base de datos local.
    */
   loginLocal(
     usuario: string,
     password: string
   ): Observable<any> {
+    const url = `${this.apiAuth}/AccesoLogginLocal`;
 
-    const url =
-      `${this.apiAuth}/AccesoLogginLocal`;
-
-    console.log(
-      'URL Login Local:',
-      url
-    );
+    console.log('URL Login Local:', url);
 
     return this.http.post(
       url,
@@ -120,87 +79,103 @@ export class AuthService {
   }
 
   /**
-   * REGISTRAR USUARIO
+   * Registra usuario.
    */
   registrarUsuario(
     usuario: any
   ): Observable<any> {
-
     return this.http.post(
       `${this.apiAuth}/RegistrarUsuario`,
       usuario
     );
   }
 
-
   /**
- * Guarda la sesión actual.
- */
-saveSession(
-  token: string | null,
-  usuario: any,
-  perfil = 'UsuarioInterno'
-): void {
-
-  this.sessionService
-    .saveSession(
+   * Guarda la sesión actual.
+   */
+  saveSession(
+    token: string | null,
+    usuario: any,
+    perfil = 'UsuarioInterno'
+  ): void {
+    this.sessionService.saveSession(
       token,
       usuario,
       perfil
     );
-}
-
-/**
- * Verifica si existe una sesión activa.
- */
-isAuthenticated(): boolean {
-
-  return this.sessionService
-    .isAuthenticated();
-}
-
-/**
- * Obtiene el token almacenado.
- */
-getToken(): string | null {
-
-  return this.sessionService
-    .getToken();
-}
-
-/**
- * Obtiene el usuario almacenado.
- */
-getUser(): any {
-
-  return this.sessionService
-    .getUser();
-}
-
-/**
- * Limpia la sesión.
- */
-clearSession(): void {
-
-  this.sessionService
-    .clearSession();
-}
+  }
 
   /**
-   * Valida si pertenece
-   * al área de Facturación.
+   * Método de compatibilidad para login temporal.
+   */
+  login(
+    token: string | null,
+    usuario: any
+  ): void {
+    this.saveSession(
+      token,
+      usuario,
+      'UsuarioInterno'
+    );
+  }
+
+  /**
+   * Verifica si existe una sesión activa.
+   */
+  isAuthenticated(): boolean {
+    return this.sessionService.isAuthenticated();
+  }
+
+  /**
+   * Obtiene el token almacenado.
+   */
+  getToken(): string | null {
+    return this.sessionService.getToken();
+  }
+
+  /**
+   * Obtiene el usuario almacenado.
+   */
+  getUser(): any {
+    return this.sessionService.getUser();
+  }
+
+  /**
+   * Obtiene la información del usuario actual.
+   */
+  getCurrentUser(): any {
+    return this.getUser();
+  }
+
+  /**
+   * Limpia la sesión.
+   */
+  clearSession(): void {
+    this.sessionService.clearSession();
+  }
+
+  /**
+   * Valida si el usuario actual pertenece al área de Facturación.
+   *
+   * Se usa para proteger la pantalla Empresas de la HU-005.
+   */
+  isFacturacionUser(): boolean {
+    const usuario = this.getCurrentUser();
+
+    return this.perteneceFacturacion(usuario);
+  }
+
+  /**
+   * Valida si un usuario pertenece al área de Facturación.
    */
   perteneceFacturacion(
     usuario: any
   ): boolean {
-
-    console.log(
-      'Objeto recibido:',
-      usuario
-    );
+    console.log('Objeto recibido:', usuario);
 
     const area =
-
+      usuario?.area ||
+      usuario?.Area ||
       usuario?.Department ||
       usuario?.department ||
       usuario?.Departamento ||
@@ -211,65 +186,39 @@ clearSession(): void {
       usuario?.descripcion ||
       '';
 
-    console.log(
-      'Área encontrada:',
-      area
-    );
+    console.log('Área encontrada:', area);
 
-    const areaNormalizada =
+    const areaNormalizada = area
+      .toString()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toUpperCase()
+      .trim();
 
-      area
-        .toString()
-        .normalize('NFD')
-        .replace(
-          /[\u0300-\u036f]/g,
-          ''
-        )
-        .toUpperCase()
-        .trim();
+    console.log('Área normalizada:', areaNormalizada);
 
-    console.log(
-      'Área normalizada:',
-      areaNormalizada
-    );
+    const pertenece = areaNormalizada.includes('FACTURACION');
 
-    const pertenece =
-      areaNormalizada.includes(
-        'FACTURACION'
-      );
-
-    console.log(
-      'Pertenece a Facturación:',
-      pertenece
-    );
+    console.log('Pertenece a Facturación:', pertenece);
 
     return pertenece;
   }
 
   /**
-   * Último cierre registrado.
+   * Obtiene el último cierre registrado.
    */
-  getLastLogoutRecord():
-    LogoutRecord | null {
-
-    const storedRecord =
-      localStorage.getItem(
-        this.lastLogoutRecordKey
-      );
+  getLastLogoutRecord(): LogoutRecord | null {
+    const storedRecord = localStorage.getItem(
+      this.lastLogoutRecordKey
+    );
 
     if (!storedRecord) {
-
       return null;
     }
 
     try {
-
-      return JSON.parse(
-        storedRecord
-      ) as LogoutRecord;
-    }
-    catch {
-
+      return JSON.parse(storedRecord) as LogoutRecord;
+    } catch {
       localStorage.removeItem(
         this.lastLogoutRecordKey
       );
@@ -284,33 +233,23 @@ clearSession(): void {
   logout(
     type: LogoutType
   ): void {
-
-    const request:
-      LogoutRequest = {
-
+    const request: LogoutRequest = {
       tipoCierre: type
     };
 
     this.http.post<LogoutResponse>(
       this.logoutUrl,
       request
-    )
-    .subscribe({
-
+    ).subscribe({
       next: (response) => {
-
         this.saveLogoutRecord(
           type,
-          response.fechaCierre ??
-          new Date()
-            .toISOString()
+          response.fechaCierre ?? new Date().toISOString()
         );
 
         this.finalizeLogout();
       },
-
       error: (error) => {
-
         console.error(
           'No fue posible registrar el cierre:',
           error
@@ -318,8 +257,7 @@ clearSession(): void {
 
         this.saveLogoutRecord(
           type,
-          new Date()
-            .toISOString()
+          new Date().toISOString()
         );
 
         this.finalizeLogout();
@@ -334,37 +272,28 @@ clearSession(): void {
     type: LogoutType,
     fechaHoraUtc: string
   ): void {
-
-    const logoutRecord:
-      LogoutRecord = {
-
+    const logoutRecord: LogoutRecord = {
       tipoCierre: type,
       fechaHoraUtc
     };
 
     localStorage.setItem(
       this.lastLogoutRecordKey,
-      JSON.stringify(
-        logoutRecord
-      )
+      JSON.stringify(logoutRecord)
     );
   }
 
   /**
    * Finaliza la sesión.
    */
-  private finalizeLogout():
-    void {
+  private finalizeLogout(): void {
+    this.sessionService.clearSession();
 
-    this.sessionService
-      .clearSession();
-
-    void this.router
-      .navigateByUrl(
-        '/login',
-        {
-          replaceUrl: true
-        }
-      );
+    void this.router.navigateByUrl(
+      '/login',
+      {
+        replaceUrl: true
+      }
+    );
   }
 }

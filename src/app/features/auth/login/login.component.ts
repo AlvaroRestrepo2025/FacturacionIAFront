@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -15,7 +15,6 @@ import { LogoutRecord } from '../../../shared/models/logout-record.model';
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-
   private readonly authService = inject(AuthService);
   private readonly sessionService = inject(SessionService);
   private readonly router = inject(Router);
@@ -25,19 +24,21 @@ export class LoginComponent {
   cargando = false;
 
   /**
-   * Último logout
+   * Último cierre de sesión registrado.
    */
   get lastLogoutRecord(): LogoutRecord | null {
     return this.authService.getLastLogoutRecord();
   }
 
   /**
-   * Mensaje logout
+   * Mensaje mostrado después de cerrar sesión.
    */
   get logoutMessage(): string | null {
     const record = this.lastLogoutRecord;
 
-    if (!record) return null;
+    if (!record) {
+      return null;
+    }
 
     return record.tipoCierre === 'Inactividad'
       ? 'Tu sesión fue cerrada por inactividad.'
@@ -45,10 +46,33 @@ export class LoginComponent {
   }
 
   /**
-   * LOGIN PRINCIPAL (LDAP)
+   * Login temporal usado durante desarrollo.
+   *
+   * Se conserva para poder entrar al sistema mientras
+   * se valida la autenticación definitiva.
+   */
+  temporaryLogin(): void {
+    const temporaryUser = {
+      name: 'Usuario',
+      role: 'Usuario del sistema',
+      area: 'Facturacion'
+    };
+
+    this.sessionService.saveSession(
+      'temporary-token',
+      temporaryUser,
+      'UsuarioInterno'
+    );
+
+    void this.router.navigateByUrl('/dashboard', {
+      replaceUrl: true
+    });
+  }
+
+  /**
+   * Login principal contra LDAP.
    */
   login(): void {
-
     if (!this.usuario || !this.password) {
       alert('Ingrese usuario y contraseña.');
       return;
@@ -58,29 +82,22 @@ export class LoginComponent {
 
     this.authService.loginLDAP(this.usuario, this.password)
       .subscribe({
-
         next: (resp) => {
-
           this.cargando = false;
           console.log('RESP LDAP:', resp);
 
-          /**
-           * NORMALIZAR RESPUESTA (evita problemas de mayúsculas/minúsculas)
-           */
           const respuesta = resp?.respuesta ?? resp?.Respuesta;
           const resultado = resp?.resultado ?? resp?.Resultado;
 
-          // ❌ LDAP falló o no validó
           if (respuesta === false) {
             console.warn('LDAP respondió false → fallback BD');
             this.loginBD();
             return;
           }
 
-          const usuarioLDAP =
-            Array.isArray(resultado)
-              ? resultado[0]
-              : resultado;
+          const usuarioLDAP = Array.isArray(resultado)
+            ? resultado[0]
+            : resultado;
 
           if (!usuarioLDAP) {
             console.warn('LDAP sin usuario → fallback BD');
@@ -88,8 +105,7 @@ export class LoginComponent {
             return;
           }
 
-          const pertenece =
-            this.authService.perteneceFacturacion(usuarioLDAP);
+          const pertenece = this.authService.perteneceFacturacion(usuarioLDAP);
 
           if (!pertenece) {
             alert('El usuario no pertenece al área de Facturación');
@@ -102,49 +118,39 @@ export class LoginComponent {
             usuarioLDAP
           );
         },
-
         error: (err) => {
-
           console.error('❌ ERROR LDAP:', err);
-
-          //alert('LDAP no disponible. Intentando acceso local...');
-
           this.loginBD();
         }
       });
   }
 
   /**
-   * LOGIN DE CONTINGENCIA (BD LOCAL)
+   * Login de contingencia contra base de datos local.
    */
   private loginBD(): void {
-
     console.log('🔁 LOGIN BD LOCAL');
     console.log('Usuario:', this.usuario);
     console.log('Password:', this.password);
 
     this.authService.loginLocal(this.usuario, this.password)
       .subscribe({
-
         next: (resp) => {
-
           this.cargando = false;
           console.log('RESP LOCAL:', resp);
 
           const resultado = resp?.resultado ?? resp?.Resultado;
 
-          const usuarioBD =
-            Array.isArray(resultado)
-              ? resultado[0]
-              : resultado;
+          const usuarioBD = Array.isArray(resultado)
+            ? resultado[0]
+            : resultado;
 
           if (!usuarioBD) {
             alert('Usuario no encontrado en sistema local.');
             return;
           }
 
-          const pertenece =
-            this.authService.perteneceFacturacion(usuarioBD);
+          const pertenece = this.authService.perteneceFacturacion(usuarioBD);
 
           if (!pertenece) {
             alert('El usuario no pertenece a Facturación');
@@ -157,9 +163,7 @@ export class LoginComponent {
             usuarioBD
           );
         },
-
         error: (err) => {
-
           console.error('❌ ERROR LOGIN LOCAL:', err);
 
           this.cargando = false;
@@ -170,13 +174,12 @@ export class LoginComponent {
   }
 
   /**
-   * INGRESO CENTRALIZADO
+   * Guarda la sesión y redirige al dashboard.
    */
   private ingresarSistema(
     token: string | null,
     usuario: any
   ): void {
-
     console.log('✅ INGRESO SISTEMA');
 
     this.sessionService.saveSession(
