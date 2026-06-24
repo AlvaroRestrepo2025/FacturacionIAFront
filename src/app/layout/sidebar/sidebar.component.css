@@ -174,16 +174,17 @@
 }
 
 .navigation-icon {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
 
   width: 22px;
-  height: 22px;
-
-  font-size: 18px;
+  min-width: 22px;
 }
 
+.navigation-icon i {
+  font-size: 18px;
+}
 /* =========================================================
    ZONA INFERIOR Y CIERRE DE SESIÓN
    ========================================================= */
@@ -201,13 +202,14 @@
 }
 
 .logout-icon {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
 
   width: 22px;
-  height: 22px;
+}
 
+.logout-icon i {
   font-size: 18px;
 }
 
@@ -225,4 +227,74 @@
   .user-role {
     font-size: 10px;
   }
+}
+.sidebar {
+  transition: width 0.3s ease;
+}
+
+.sidebar--collapsed {
+  width: 88px;
+}
+
+.sidebar-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 38px;
+  height: 38px;
+
+  margin-bottom: var(--spacing-md);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+
+  background: var(--color-white);
+
+  cursor: pointer;
+
+  transition: all var(--transition-fast);
+}
+
+.sidebar-toggle:hover {
+  border-color: var(--color-primary);
+  background-color: rgba(16, 212, 81, 0.08);
+}
+
+.sidebar-toggle i {
+  font-size: 18px;
+}
+
+.sidebar--collapsed .sidebar-user {
+  justify-content: center;
+}
+
+.sidebar--collapsed .navigation-item {
+  justify-content: center;
+  padding: 10px;
+}
+
+.sidebar--collapsed .logout-button {
+  justify-content: center;
+}
+
+.sidebar-brand-collapsed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 40px;
+
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.sidebar-brand-collapsed .brand-name {
+  color: var(--color-black);
+}
+
+.sidebar-brand-collapsed .brand-symbol {
+  color: var(--color-primary);
 }

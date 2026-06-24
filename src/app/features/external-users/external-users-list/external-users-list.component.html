@@ -1,0 +1,148 @@
+<div class="eu-page">
+  <!-- Header -->
+  <div class="eu-page__header">
+    <div class="eu-page__header-left">
+      <button class="btn btn-outline" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i>
+        Atrás
+      </button>
+    </div>
+
+    <div class="eu-page__header-center">
+      <h1 class="eu-page__title">Gestión de usuarios externos</h1>
+      <div class="eu-page__search">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Buscar"
+          [(ngModel)]="searchText"
+          (ngModelChange)="onSearchChange()"
+        />
+        <span class="search-input__icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </span>
+      </div>
+    </div>
+
+    <div class="eu-page__header-right">
+      <button class="btn btn-primary" (click)="openCrearModal()">
+        <i class="bi bi-plus-lg"></i>
+        Nuevo
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="eu-page__content">
+    <div class="table-wrapper">
+      <table class="eu-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Notas</th>
+            <th>Usuario creación</th>
+            <th>Fecha creación</th>
+            <th>Usuario modificación</th>
+            <th>Fecha modificación</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (pagedUsers.length === 0) {
+            <tr>
+              <td colspan="9" class="eu-table__empty">
+                No se encontraron registros
+              </td>
+            </tr>
+          }
+          @for (user of pagedUsers; track user.idUsuarioExterno) {
+            <tr>
+              <td>{{ user.nombre }}</td>
+              <td>{{ user.correo }}</td>
+              <td>{{ user.notas }}</td>
+              <td>{{ user.usuarioCreacion }}</td>
+              <td>{{ user.fechaCreacion | date: "dd/MM/yyyy" }}</td>
+              <td>{{ user.usuarioModificacion || "—" }}</td>
+              <td>
+                {{
+                  user.fechaModificacion
+                    ? (user.fechaModificacion | date: "dd/MM/yyyy")
+                    : "—"
+                }}
+              </td>
+              <td>
+                <span
+                  class="badge"
+                  [class.badge--active]="user.estado"
+                  [class.badge--inactive]="!user.estado"
+                >
+                  {{ user.estado ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="actions-cell">
+                <i
+                  class="bi bi-pencil-square action-icon action-icon--edit"
+                  (click)="openEditarModal(user)"
+                  title="Editar"
+                ></i>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginador -->
+    <div class="paginator">
+      <button
+        class="paginator__btn"
+        (click)="goToPage(currentPage - 1)"
+        [disabled]="currentPage === 1"
+      >
+        &laquo;
+      </button>
+      @for (page of pages; track page) {
+        <button
+          class="paginator__btn"
+          [class.paginator__btn--active]="page === currentPage"
+          (click)="goToPage(page)"
+        >
+          {{ page }}
+        </button>
+      }
+      <button
+        class="paginator__btn"
+        (click)="goToPage(currentPage + 1)"
+        [disabled]="currentPage === totalPages"
+      >
+        &raquo;
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+@if (isModalOpen) {
+  <app-external-user-modal
+    [mode]="modalMode"
+    [user]="selectedUser"
+    [isSaving]="isSaving"
+    (closeModal)="onModalClose()"
+    (saveModal)="onModalSave($event)"
+  />
+}

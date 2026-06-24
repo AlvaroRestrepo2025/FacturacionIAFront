@@ -14,16 +14,16 @@ import { AuthService } from '../../core/services/auth.service';
 export class SidebarComponent {
   private readonly authService = inject(AuthService);
 
+  isCollapsed = false;
+
   get mostrarMenuEmpresas(): boolean {
     return this.authService.isFacturacionUser();
   }
 
-  /**
-   * Ejecuta el cierre manual de sesión.
-   *
-   * Se utiliza cuando el usuario selecciona
-   * la opción "Cerrar sesión" del menú lateral.
-   */
+  toggleSidebar(): void {
+    this.isCollapsed = !this.isCollapsed;
+  }
+
   logout(): void {
     this.authService.logout('Manual');
   }
