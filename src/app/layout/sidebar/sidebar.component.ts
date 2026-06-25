@@ -28,3 +28,7 @@ export class SidebarComponent {
     this.authService.logout('Manual');
   }
 }
+
+//si el rol = facturación, debo mostrar los botones que indican las HU que
+// hemos trabajado, si el rol = contabler se debe cumplir la misma condición solo para los botones de contabler
+//obtener rol: const rol = sessionStorage.getItem('Rol');

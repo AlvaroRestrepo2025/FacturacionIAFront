@@ -43,7 +43,7 @@ export class AuthService {
   ): Observable<any> {
     const url = `${this.apiAuth}/AccesoDirectorioActivo`;
 
-    console.log('URL LDAP:', url);
+
 
     return this.http.post(
       url,
@@ -65,7 +65,7 @@ export class AuthService {
   ): Observable<any> {
     const url = `${this.apiAuth}/AccesoLogginLocal`;
 
-    console.log('URL Login Local:', url);
+
 
     return this.http.post(
       url,
@@ -171,7 +171,7 @@ export class AuthService {
   perteneceFacturacion(
     usuario: any
   ): boolean {
-    console.log('Objeto recibido:', usuario);
+
 
     const area =
       usuario?.area ||
@@ -186,7 +186,7 @@ export class AuthService {
       usuario?.descripcion ||
       '';
 
-    console.log('Área encontrada:', area);
+
 
     const areaNormalizada = area
       .toString()
@@ -195,11 +195,47 @@ export class AuthService {
       .toUpperCase()
       .trim();
 
-    console.log('Área normalizada:', areaNormalizada);
+
 
     const pertenece = areaNormalizada.includes('FACTURACION');
 
-    console.log('Pertenece a Facturación:', pertenece);
+
+
+    return pertenece;
+  }
+
+  perteneceContabler(
+    usuario: any
+  ): boolean {
+
+
+    const area =
+      usuario?.area ||
+      usuario?.Area ||
+      usuario?.Department ||
+      usuario?.department ||
+      usuario?.Departamento ||
+      usuario?.departamento ||
+      usuario?.Cargo ||
+      usuario?.cargo ||
+      usuario?.Descripcion ||
+      usuario?.descripcion ||
+      '';
+
+
+
+    const areaNormalizada = area
+      .toString()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toUpperCase()
+      .trim();
+
+
+
+    const pertenece = areaNormalizada.includes('CONTABLER');
+
+
 
     return pertenece;
   }

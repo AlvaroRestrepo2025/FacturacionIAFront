@@ -151,12 +151,21 @@ export class LoginComponent {
           }
 
           const pertenece = this.authService.perteneceFacturacion(usuarioBD);
-
+          const perteneceContabler = this.authService.perteneceContabler(usuarioBD);
           if (!pertenece) {
-            alert('El usuario no pertenece a Facturación');
-            void this.router.navigateByUrl('/acceso-denegado');
-            return;
+
+            if(!perteneceContabler)
+            {
+              alert('El usuario no se encuentra registrado');
+              void this.router.navigateByUrl('/acceso-denegado');
+              return;
+            }
           }
+
+          sessionStorage.setItem('Rol',resultado[0].cargo);
+          sessionStorage.setItem('Nombre',resultado[0].nombre);
+          sessionStorage.setItem('Apellido',resultado[0].apellido);
+          sessionStorage.setItem('Correo',resultado[0].correo);
 
           this.ingresarSistema(
             resp?.jwt ?? resp?.JWT ?? null,
