@@ -7,11 +7,10 @@
 }
 
 .empresas-toolbar {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 18px;
+  justify-content: center;
+  margin-bottom: 22px;
 }
 
 .empresas-toolbar h1 {
@@ -58,11 +57,26 @@
 }
 
 .empresas-search-wrapper {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.empresas-search-center {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
-  margin-bottom: 32px;
+}
+
+.empresas-search-wrapper .btn-back {
+  justify-self: start;
+}
+
+.empresas-search-wrapper .btn-new {
+  justify-self: end;
 }
 
 .empresas-search-box {
@@ -378,12 +392,21 @@
     padding: 20px;
   }
 
-  .empresas-toolbar {
+  .empresas-toolbar h1 {
+    font-size: 28px;
+  }
+
+  .empresas-search-wrapper {
     grid-template-columns: 1fr;
   }
 
-  .empresas-toolbar h1 {
-    font-size: 28px;
+  .empresas-search-center {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .empresas-search-box {
+    width: 100%;
   }
 
   .btn-back,
@@ -391,8 +414,9 @@
     justify-self: center;
   }
 
-  .empresas-search-wrapper {
-    flex-direction: column;
+  .empresas-search-wrapper .btn-back,
+  .empresas-search-wrapper .btn-new {
+    justify-self: center;
   }
 
   .form-grid {
