@@ -1,5 +1,9 @@
 <section class="empresas-page">
   <div class="empresas-toolbar">
+    <h1>Empresas</h1>
+  </div>
+
+  <div class="empresas-search-wrapper">
     <button
       class="btn-custom btn-back"
       type="button"
@@ -9,7 +13,34 @@
       Atrás
     </button>
 
-    <h1>Empresas</h1>
+    <div class="empresas-search-center">
+      <div class="empresas-search-box">
+        <input
+          class="search-control"
+          type="text"
+          placeholder="Buscar"
+          [(ngModel)]="busqueda"
+          (keyup.enter)="buscarEmpresas()"
+        />
+
+        <button
+          class="search-button"
+          type="button"
+          aria-label="Buscar empresa"
+          (click)="buscarEmpresas()"
+        >
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
+
+      <button
+        class="btn-custom btn-clear-search"
+        type="button"
+        (click)="limpiarBusqueda()"
+      >
+        Limpiar
+      </button>
+    </div>
 
     <button
       class="btn-custom btn-new"
@@ -18,35 +49,6 @@
     >
       <span aria-hidden="true">+</span>
       Nuevo
-    </button>
-  </div>
-
-  <div class="empresas-search-wrapper">
-    <div class="empresas-search-box">
-      <input
-        class="search-control"
-        type="text"
-        placeholder="Buscar"
-        [(ngModel)]="busqueda"
-        (keyup.enter)="buscarEmpresas()"
-      />
-
-      <button
-        class="search-button"
-        type="button"
-        aria-label="Buscar empresa"
-        (click)="buscarEmpresas()"
-      >
-        <i class="bi bi-search"></i>
-      </button>
-    </div>
-
-    <button
-      class="btn-custom btn-clear-search"
-      type="button"
-      (click)="limpiarBusqueda()"
-    >
-      Limpiar
     </button>
   </div>
 
