@@ -105,18 +105,34 @@ export class SessionService {
    */
   clearSession(): void {
 
-    localStorage.removeItem(
-      this.TOKEN_KEY
-    );
+  localStorage.removeItem(
+    this.TOKEN_KEY
+  );
 
-    localStorage.removeItem(
-      this.USER_KEY
-    );
+  localStorage.removeItem(
+    this.USER_KEY
+  );
 
-    localStorage.removeItem(
-      this.PROFILE_KEY
-    );
-  }
+  localStorage.removeItem(
+    this.PROFILE_KEY
+  );
+
+  sessionStorage.removeItem(
+    'Nombre'
+  );
+
+  sessionStorage.removeItem(
+    'Apellido'
+  );
+
+  sessionStorage.removeItem(
+    'Correo'
+  );
+
+  sessionStorage.removeItem(
+    'Rol'
+  );
+}
 
   /**
    * Cierra la sesión.
