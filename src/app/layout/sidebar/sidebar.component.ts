@@ -16,8 +16,29 @@ export class SidebarComponent {
 
   isCollapsed = false;
 
+  get nombreUsuario(): string {
+    const nombre = sessionStorage.getItem('Nombre') ?? '';
+    const apellido = sessionStorage.getItem('Apellido') ?? '';
+
+    const nombreCompleto = `${nombre} ${apellido}`.trim();
+
+    return nombreCompleto || 'Usuario';
+  }
+
+  get rolUsuario(): string {
+    return sessionStorage.getItem('Rol') || 'Usuario del sistema';
+  }
+
+  get mostrarPanelPrincipal(): boolean {
+    return this.authService.isFacturacionOrContablerUser();
+  }
+
   get mostrarMenuEmpresas(): boolean {
     return this.authService.isFacturacionUser();
+  }
+
+  get mostrarMenuUsuariosExternos(): boolean {
+    return this.authService.isContablerUser();
   }
 
   toggleSidebar(): void {
@@ -28,7 +49,3 @@ export class SidebarComponent {
     this.authService.logout('Manual');
   }
 }
-
-//si el rol = facturación, debo mostrar los botones que indican las HU que
-// hemos trabajado, si el rol = contabler se debe cumplir la misma condición solo para los botones de contabler
-//obtener rol: const rol = sessionStorage.getItem('Rol');

@@ -22,17 +22,12 @@ export class LoginComponent {
   usuario = '';
   password = '';
   cargando = false;
+  mensajeError = '';
 
-  /**
-   * Último cierre de sesión registrado.
-   */
   get lastLogoutRecord(): LogoutRecord | null {
     return this.authService.getLastLogoutRecord();
   }
 
-  /**
-   * Mensaje mostrado después de cerrar sesión.
-   */
   get logoutMessage(): string | null {
     const record = this.lastLogoutRecord;
 
@@ -45,52 +40,28 @@ export class LoginComponent {
       : 'Sesión cerrada correctamente.';
   }
 
-  /**
-   * Login temporal usado durante desarrollo.
-   *
-   * Se conserva para poder entrar al sistema mientras
-   * se valida la autenticación definitiva.
-   */
-  temporaryLogin(): void {
-    const temporaryUser = {
-      name: 'Usuario',
-      role: 'Usuario del sistema',
-      area: 'Facturacion'
-    };
-
-    this.sessionService.saveSession(
-      'temporary-token',
-      temporaryUser,
-      'UsuarioInterno'
-    );
-
-    void this.router.navigateByUrl('/dashboard', {
-      replaceUrl: true
-    });
-  }
-
-  /**
-   * Login principal contra LDAP.
-   */
   login(): void {
-    if (!this.usuario || !this.password) {
-      alert('Ingrese usuario y contraseña.');
+    this.limpiarMensaje();
+
+    if (!this.usuario.trim()) {
+      this.mostrarError('El campo usuario es obligatorio.');
+      return;
+    }
+
+    if (!this.password.trim()) {
+      this.mostrarError('El campo contraseña es obligatorio.');
       return;
     }
 
     this.cargando = true;
 
-    this.authService.loginLDAP(this.usuario, this.password)
+    this.authService.loginLDAP(this.usuario.trim(), this.password)
       .subscribe({
         next: (resp) => {
-          this.cargando = false;
-          console.log('RESP LDAP:', resp);
-
           const respuesta = resp?.respuesta ?? resp?.Respuesta;
           const resultado = resp?.resultado ?? resp?.Resultado;
 
           if (respuesta === false) {
-            console.warn('LDAP respondió false → fallback BD');
             this.loginBD();
             return;
           }
@@ -100,45 +71,36 @@ export class LoginComponent {
             : resultado;
 
           if (!usuarioLDAP) {
-            console.warn('LDAP sin usuario → fallback BD');
             this.loginBD();
             return;
           }
 
-          const pertenece = this.authService.perteneceFacturacion(usuarioLDAP);
+          const perteneceFacturacion = this.authService.perteneceFacturacion(usuarioLDAP);
+          const perteneceContabler = this.authService.perteneceContabler(usuarioLDAP);
 
-          if (!pertenece) {
-            alert('El usuario no pertenece al área de Facturación');
-            void this.router.navigateByUrl('/acceso-denegado');
+          if (!perteneceFacturacion && !perteneceContabler) {
+            this.cargando = false;
+            this.mostrarError('El usuario no pertenece al área de Facturación o Contabler.');
             return;
           }
+
+          this.guardarDatosUsuario(usuarioLDAP);
 
           this.ingresarSistema(
             resp?.jwt ?? resp?.JWT ?? null,
             usuarioLDAP
           );
         },
-        error: (err) => {
-          console.error('❌ ERROR LDAP:', err);
+        error: () => {
           this.loginBD();
         }
       });
   }
 
-  /**
-   * Login de contingencia contra base de datos local.
-   */
   private loginBD(): void {
-    console.log('🔁 LOGIN BD LOCAL');
-    console.log('Usuario:', this.usuario);
-    console.log('Password:', this.password);
-
-    this.authService.loginLocal(this.usuario, this.password)
+    this.authService.loginLocal(this.usuario.trim(), this.password)
       .subscribe({
         next: (resp) => {
-          this.cargando = false;
-          console.log('RESP LOCAL:', resp);
-
           const resultado = resp?.resultado ?? resp?.Resultado;
 
           const usuarioBD = Array.isArray(resultado)
@@ -146,59 +108,62 @@ export class LoginComponent {
             : resultado;
 
           if (!usuarioBD) {
-            alert('Usuario no encontrado en sistema local.');
+            this.cargando = false;
+            this.mostrarError('Usuario no encontrado en el sistema local.');
             return;
           }
 
-          const pertenece = this.authService.perteneceFacturacion(usuarioBD);
+          const perteneceFacturacion = this.authService.perteneceFacturacion(usuarioBD);
           const perteneceContabler = this.authService.perteneceContabler(usuarioBD);
-          if (!pertenece) {
 
-            if(!perteneceContabler)
-            {
-              alert('El usuario no se encuentra registrado');
-              void this.router.navigateByUrl('/acceso-denegado');
-              return;
-            }
+          if (!perteneceFacturacion && !perteneceContabler) {
+            this.cargando = false;
+            this.mostrarError('El usuario no se encuentra autorizado para ingresar.');
+            return;
           }
 
-          sessionStorage.setItem('Rol',resultado[0].cargo);
-          sessionStorage.setItem('Nombre',resultado[0].nombre);
-          sessionStorage.setItem('Apellido',resultado[0].apellido);
-          sessionStorage.setItem('Correo',resultado[0].correo);
+          this.guardarDatosUsuario(usuarioBD);
 
           this.ingresarSistema(
             resp?.jwt ?? resp?.JWT ?? null,
             usuarioBD
           );
         },
-        error: (err) => {
-          console.error('❌ ERROR LOGIN LOCAL:', err);
-
+        error: () => {
           this.cargando = false;
-
-          alert('Usuario o contraseña incorrectos o servicio no disponible.');
+          this.mostrarError('Usuario o contraseña incorrectos, o el servicio no está disponible.');
         }
       });
   }
 
-  /**
-   * Guarda la sesión y redirige al dashboard.
-   */
-  private ingresarSistema(
-    token: string | null,
-    usuario: any
-  ): void {
-    console.log('✅ INGRESO SISTEMA');
+  private ingresarSistema(token: string | null, usuario: any): void {
+    const tokenFinal = token ?? 'token-local-facturacion-ia';
 
     this.sessionService.saveSession(
-      token,
+      tokenFinal,
       usuario,
       'UsuarioInterno'
     );
 
+    this.cargando = false;
+
     void this.router.navigateByUrl('/dashboard', {
       replaceUrl: true
     });
+  }
+
+  private guardarDatosUsuario(usuario: any): void {
+    sessionStorage.setItem('Rol', usuario?.cargo ?? usuario?.Cargo ?? usuario?.rol ?? usuario?.Rol ?? '');
+    sessionStorage.setItem('Nombre', usuario?.nombre ?? usuario?.Nombre ?? usuario?.name ?? usuario?.Name ?? '');
+    sessionStorage.setItem('Apellido', usuario?.apellido ?? usuario?.Apellido ?? '');
+    sessionStorage.setItem('Correo', usuario?.correo ?? usuario?.Correo ?? usuario?.email ?? usuario?.Email ?? '');
+  }
+
+  private mostrarError(mensaje: string): void {
+    this.mensajeError = mensaje;
+  }
+
+  private limpiarMensaje(): void {
+    this.mensajeError = '';
   }
 }

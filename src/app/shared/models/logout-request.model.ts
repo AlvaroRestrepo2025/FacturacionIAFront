@@ -5,5 +5,5 @@ import { LogoutType } from './logout-type.model';
  * cuando finalice la sesión.
  */
 export interface LogoutRequest {
-  tipoCierre: LogoutType;
+  motivo: LogoutType;
 }

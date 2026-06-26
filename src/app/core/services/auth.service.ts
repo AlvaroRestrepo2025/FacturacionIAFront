@@ -14,8 +14,8 @@ import { SessionService } from './session.service';
 interface LogoutResponse {
   exito: boolean;
   mensaje: string;
-  idAuditoriaCierreSesion?: number | null;
-  fechaCierre?: string | null;
+  idAuditoriaSesion?: number | null;
+  fecha?: string | null;
 }
 
 @Injectable({
@@ -164,6 +164,21 @@ export class AuthService {
 
     return this.perteneceFacturacion(usuario);
   }
+    /**
+   * Valida si el usuario actual pertenece al rol/área Contabler.
+   */
+  isContablerUser(): boolean {
+    const usuario = this.getCurrentUser();
+
+    return this.perteneceContabler(usuario);
+  }
+
+  /**
+   * Valida si el usuario actual puede ver opciones del menú principal.
+   */
+  isFacturacionOrContablerUser(): boolean {
+    return this.isFacturacionUser() || this.isContablerUser();
+  }
 
   /**
    * Valida si un usuario pertenece al área de Facturación.
@@ -270,7 +285,7 @@ export class AuthService {
     type: LogoutType
   ): void {
     const request: LogoutRequest = {
-      tipoCierre: type
+      motivo: type
     };
 
     this.http.post<LogoutResponse>(
@@ -280,7 +295,7 @@ export class AuthService {
       next: (response) => {
         this.saveLogoutRecord(
           type,
-          response.fechaCierre ?? new Date().toISOString()
+          response.fecha ?? new Date().toISOString()
         );
 
         this.finalizeLogout();
