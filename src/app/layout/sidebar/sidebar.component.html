@@ -66,6 +66,20 @@
         <span>Gestión de usuarios externos</span>
       }
     </a>
+
+    <a
+      class="navigation-item"
+      routerLink="/dashboard/carga-documentos"
+      routerLinkActive="navigation-item-active"
+    >
+      <span class="navigation-icon">
+        <i class="bi bi-file-earmark-pdf-fill"></i>
+      </span>
+
+      @if (!isCollapsed) {
+        <span>Carga documentos / PDF</span>
+      }
+    </a>
   </nav>
 
   <!-- Zona inferior del menú -->
