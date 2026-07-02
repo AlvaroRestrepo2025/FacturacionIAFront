@@ -22,14 +22,21 @@
     }
   </header>
 
-  <!-- Información temporal del usuario -->
+  <!-- Información del usuario -->
   <section class="sidebar-user">
-    <div class="user-avatar" aria-hidden="true">U</div>
+    <div class="user-avatar" aria-hidden="true">
+      {{ nombreUsuario.charAt(0).toUpperCase() }}
+    </div>
 
     @if (!isCollapsed) {
       <div class="user-information">
-        <span class="user-name">Usuario</span>
-        <span class="user-role">Usuario del sistema</span>
+        <span class="user-name">
+          {{ nombreUsuario }}
+        </span>
+
+        <span class="user-role">
+          {{ rolUsuario }}
+        </span>
       </div>
     }
   </section>
@@ -40,20 +47,16 @@
       <p class="navigation-title">Menú</p>
     }
 
-    <a
-      class="navigation-item"
-      routerLink="/dashboard"
-      routerLinkActive="navigation-item-active"
-      [routerLinkActiveOptions]="{ exact: true }"
-    >
-      <span class="navigation-icon">
-        <i class="bi bi-grid-1x2-fill"></i>
-      </span>
-      @if (!isCollapsed) {
-        <span>Panel principal</span>
-      }
-    </a>
-
+    @if (mostrarPanelPrincipal) {
+      <a
+        class="navigation-item"
+        routerLink="/dashboard"
+        routerLinkActive="navigation-item-active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <span class="navigation-icon">
+          <i class="bi bi-grid-1x2-fill"></i>
+        </span>
     <a
       class="navigation-item"
       routerLink="/dashboard/usuarios-externos"
@@ -80,6 +83,28 @@
         <span>Carga documentos / PDF</span>
       }
     </a>
+
+        @if (!isCollapsed) {
+          <span>Panel principal</span>
+        }
+      </a>
+    }
+
+    @if (mostrarMenuEmpresas) {
+      <a
+        class="navigation-item"
+        routerLink="/dashboard/empresas"
+        routerLinkActive="navigation-item-active"
+      >
+        <span class="navigation-icon">
+          <i class="bi bi-building"></i>
+        </span>
+
+        @if (!isCollapsed) {
+          <span>Empresas</span>
+        }
+      </a>
+    }
   </nav>
 
   <!-- Zona inferior del menú -->
@@ -93,6 +118,7 @@
       <span class="logout-icon">
         <i class="bi bi-box-arrow-right"></i>
       </span>
+
       @if (!isCollapsed) {
         <span>Cerrar sesión</span>
       }

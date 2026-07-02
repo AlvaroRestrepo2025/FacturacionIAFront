@@ -3,5 +3,8 @@
  */
 export const environment = {
   production: false,
-  apiUrl: 'https://localhost:7066/api'
-} as const;
+
+  apiUrl: 'https://localhost:7066/api',
+
+  apiAuth: 'https://localhost:7241'
+};
