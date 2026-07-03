@@ -6,6 +6,10 @@ import { Router } from '@angular/router';
 import { DocumentUploadModalComponent } from '../document-upload-modal/document-upload-modal.component';
 import { DocumentUploadService } from '../../../core/services/document-upload.service';
 
+import { EmpresaService } from '../../../core/services/empresa.service';
+import { Empresa } from '../../../shared/models/empresa.model';
+import { AlertService } from '../../../core/services/alert.service';
+
 @Component({
   selector: 'app-document-upload-list',
   standalone: true,
@@ -35,14 +39,41 @@ export class DocumentUploadListComponent implements OnInit {
 
   documents: any[] = [];
 
+  empresas: Empresa[] = [];
+
   constructor(
     private router: Router,
-    private documentService: DocumentUploadService
+    private documentService: DocumentUploadService,
+    private empresaService: EmpresaService,
+    private alert: AlertService
   ) { }
 
   ngOnInit(): void {
 
     this.obtenerDocumentos();
+    this.obtenerEmpresas();
+
+  }
+
+  obtenerEmpresas(): void {
+
+    this.empresaService
+      .listarEmpresas('', 1, 1000)
+      .subscribe({
+
+        next: (response) => {
+
+          this.empresas = response.empresas;
+
+        },
+
+        error: (err) => {
+
+          console.error(err);
+
+        }
+
+      });
 
   }
 
@@ -147,6 +178,8 @@ export class DocumentUploadListComponent implements OnInit {
 
     this.isModalOpen = true;
 
+    console.log('Crear');
+
   }
 
   openEditarModal(document: any): void {
@@ -175,14 +208,12 @@ export class DocumentUploadListComponent implements OnInit {
 
     const formData = new FormData();
 
-    formData.append(
-      'Nit',
-      document.nit
-    );
+    const nombreUsuario =
+      `${sessionStorage.getItem('Nombre') ?? ''} ${sessionStorage.getItem('Apellido') ?? ''}`.trim();
 
     formData.append(
-      'Empresa',
-      document.empresa
+      'IdEmpresa',
+      document.idEmpresa.toString()
     );
 
     if (this.modalMode === 'editar') {
@@ -197,6 +228,17 @@ export class DocumentUploadListComponent implements OnInit {
         document.estado
       );
 
+      formData.append(
+        'UsuarioModificacion',
+        nombreUsuario
+      );
+    }
+    else {
+
+      formData.append(
+        'UsuarioRegistro',
+        nombreUsuario
+      );
     }
 
     for (const archivo of document.archivos) {
@@ -221,7 +263,10 @@ export class DocumentUploadListComponent implements OnInit {
 
             this.isSaving = false;
 
-            alert('Documento creado correctamente.');
+            this.alert.success(
+              'Los documentos fueron cargados correctamente.',
+              'Documento creado'
+            );
 
           },
 
@@ -229,10 +274,11 @@ export class DocumentUploadListComponent implements OnInit {
 
             this.isSaving = false;
 
-            alert(
+            this.alert.error(
               err?.error?.mensaje ??
               err?.error ??
-              'Ocurrió un error al guardar.'
+              'Ocurrió un error al guardar el documento.',
+              'Error'
             );
 
           }
@@ -253,7 +299,10 @@ export class DocumentUploadListComponent implements OnInit {
 
             this.isSaving = false;
 
-            alert('Documento actualizado correctamente.');
+            this.alert.success(
+              'Los cambios fueron guardados correctamente.',
+              'Documento actualizado'
+            );
 
           },
 
@@ -263,10 +312,11 @@ export class DocumentUploadListComponent implements OnInit {
 
             this.isSaving = false;
 
-            alert(
+            this.alert.error(
               err?.error?.mensaje ??
               err?.error ??
-              'Ocurrió un error al actualizar.'
+              'Ocurrió un error al actualizar el documento.',
+              'Error'
             );
 
           }

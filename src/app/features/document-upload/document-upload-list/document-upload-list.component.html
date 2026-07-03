@@ -1,18 +1,24 @@
 <div class="eu-page">
     <!-- Header -->
     <div class="eu-page__header">
-        <div class="eu-page__header-left">
-            <button class="btn btn-outline" (click)="goBack()">
-                <i class="bi bi-arrow-left"></i>
-                Atrás
-            </button>
-        </div>
 
-        <div class="eu-page__header-center">
-            <h1 class="eu-page__title">Carga y procesamiento de documentos</h1>
+        <h1 class="eu-page__title">
+            Carga y procesamiento de documentos
+        </h1>
+
+        <div class="eu-page__header-row">
+
+            <div class="eu-page__header-left">
+                <button class="btn btn-outline" (click)="goBack()">
+                    <i class="bi bi-arrow-left"></i>
+                    Atrás
+                </button>
+            </div>
+
             <div class="eu-page__search">
                 <input type="text" class="search-input" placeholder="Buscar" [(ngModel)]="searchText"
                     (ngModelChange)="onSearchChange()" />
+
                 <span class="search-input__icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -21,14 +27,16 @@
                     </svg>
                 </span>
             </div>
+
+            <div class="eu-page__header-right">
+                <button class="btn btn-primary" (click)="openCrearModal()">
+                    <i class="bi bi-plus-lg"></i>
+                    Nuevo
+                </button>
+            </div>
+
         </div>
 
-        <div class="eu-page__header-right">
-            <button class="btn btn-primary" (click)="openCrearModal()">
-                <i class="bi bi-plus-lg"></i>
-                Nuevo
-            </button>
-        </div>
     </div>
 
     <!-- Tabla -->
@@ -96,11 +104,9 @@
 
                         <td>
 
-                           <span
-class="badge"
-[class.badge--active]="item.estado === 'Activo'"
-[class.badge--inactive]="item.estado === 'Inactivo'"
-[class.badge--processed]="item.estado === 'Procesado'">
+                            <span class="badge" [class.badge--active]="item.estado === 'Activo'"
+                                [class.badge--inactive]="item.estado === 'Inactivo'"
+                                [class.badge--processed]="item.estado === 'Procesado'">
 
                                 {{ item.estado }}
 
@@ -113,15 +119,13 @@ class="badge"
                             <i class="bi bi-pencil-square action-icon action-icon--edit"
                                 (click)="openEditarModal(item)"></i>
 
-                           @if (item.estado === 'Activo') {
+                            @if (item.estado === 'Activo') {
 
-<i
-class="bi bi-play-circle-fill action-icon action-icon--process"
-(click)="procesar(item)"
-title="Procesar">
-</i>
+                            <i class="bi bi-play-circle-fill action-icon action-icon--process" (click)="procesar(item)"
+                                title="Procesar">
+                            </i>
 
-}
+                            }
 
                         </td>
 
@@ -153,7 +157,7 @@ title="Procesar">
 
 @if (isModalOpen) {
 
-<app-document-upload-modal [mode]="modalMode" [document]="selectedDocument" [isSaving]="isSaving"
+<app-document-upload-modal [mode]="modalMode" [document]="selectedDocument" [empresas]="empresas" [isSaving]="isSaving"
     (closeModal)="onModalClose()" (saveModal)="onModalSave($event)">
 
 </app-document-upload-modal>

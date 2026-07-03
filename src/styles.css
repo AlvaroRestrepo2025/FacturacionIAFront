@@ -6,7 +6,7 @@
 
 /* Fuente oficial de marca: Montserrat */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
-
+@import "@ng-select/ng-select/themes/default.theme.css";
 /* =========================================================
    1. VARIABLES GLOBALES DE MARCA
    ========================================================= */
@@ -383,4 +383,82 @@ p {
   .container {
     padding: 0 var(--spacing-md);
   }
+}
+
+.app-alert{
+    border-radius:20px !important;
+    padding:25px !important;
+    font-family:inherit;
+}
+
+.app-alert .swal2-title{
+    font-size:24px;
+    font-weight:700;
+}
+
+.app-alert .swal2-html-container{
+    font-size:16px;
+}
+
+.app-alert-btn-success,
+.app-alert-btn-error,
+.app-alert-btn-warning,
+.app-alert-btn-info{
+
+    border:none !important;
+
+    border-radius:999px !important;
+
+    padding:12px 32px !important;
+
+    font-weight:600 !important;
+
+    color:white !important;
+
+    transition:.2s;
+}
+
+.app-alert-btn-success{
+    background:#19b34a !important;
+}
+
+.app-alert-btn-success:hover{
+    background:#159640 !important;
+}
+
+.app-alert-btn-error{
+    background:#dc2626 !important;
+}
+
+.app-alert-btn-error:hover{
+    background:#b91c1c !important;
+}
+
+.app-alert-btn-warning{
+    background:#d97706 !important;
+}
+
+.app-alert-btn-warning:hover{
+    background:#b45309 !important;
+}
+
+.app-alert-btn-info{
+    background:#2563eb !important;
+}
+
+.app-alert-btn-info:hover{
+    background:#1d4ed8 !important;
+}
+
+.app-alert-btn-cancel{
+
+    background:#f3f4f6 !important;
+
+    color:#222 !important;
+
+    border-radius:999px !important;
+
+    padding:12px 32px !important;
+
+    margin-right:10px;
 }

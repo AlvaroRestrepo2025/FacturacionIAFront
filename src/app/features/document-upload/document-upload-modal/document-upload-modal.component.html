@@ -12,38 +12,48 @@
             <!-- Primera fila -->
             <div class="form-row">
 
-                <!-- NIT -->
-                <div class="form-group">
-
-                    <label class="form-label">
-                        NIT <span class="required">*</span>
-                    </label>
-
-                    <input type="text" class="form-input" [class.form-input--error]="errors.nit"
-                        placeholder="Ingrese el NIT" [(ngModel)]="form.nit" />
-
-                    @if (errors.nit) {
-                    <span class="form-error">
-                        {{ errors.nit }}
-                    </span>
-                    }
-
-                </div>
-
-                <!-- Empresa -->
                 <div class="form-group">
 
                     <label class="form-label">
                         Empresa <span class="required">*</span>
                     </label>
 
-                    <input type="text" class="form-input" [class.form-input--error]="errors.empresa"
-                        placeholder="Ingrese la empresa" [(ngModel)]="form.empresa" />
+                    <ng-select [items]="empresas" bindLabel="razonSocial" bindValue="idEmpresa"
+                        [(ngModel)]="form.idEmpresa" placeholder="Buscar por NIT o razón social..." [searchable]="true"
+                        [clearable]="true" notFoundText="No se encontró ninguna empresa" [searchFn]="buscarEmpresa">
+
+                        <ng-template ng-label-tmp let-item="item">
+                            <span class="empresa-seleccionada">
+                                {{ item.razonSocial }}
+                            </span>
+                        </ng-template>
+
+                        <ng-template ng-option-tmp let-item="item">
+
+                            <div class="empresa-opcion">
+
+                                <div class="empresa-opcion__nit">
+                                    {{ item.nit }}
+                                </div>
+
+                                <div class="empresa-opcion__nombre">
+                                    {{ item.razonSocial }}
+                                </div>
+
+                            </div>
+
+                        </ng-template>
+
+                    </ng-select>
 
                     @if (errors.empresa) {
+
                     <span class="form-error">
+
                         {{ errors.empresa }}
+
                     </span>
+
                     }
 
                 </div>
@@ -87,12 +97,7 @@
 
                 <label class="upload-box">
 
-                    <input
-    hidden
-    type="file"
-    multiple
-    accept=".pdf"
-    (change)="seleccionarArchivos($event)">
+                    <input hidden type="file" multiple accept=".pdf" (change)="seleccionarArchivos($event)">
 
                     @if (documentosAdjuntos.length === 0) {
 
@@ -117,34 +122,31 @@
 
                     <div class="files-list">
 
-    @for (archivo of documentosAdjuntos;
-          track archivo.name;
-          let i = $index) {
+                        @for (archivo of documentosAdjuntos;
+                        track archivo.name;
+                        let i = $index) {
 
-        <div class="file-item">
+                        <div class="file-item">
 
-            <div class="file-item__left">
+                            <div class="file-item__left">
 
-                <i class="bi bi-file-earmark-pdf-fill"></i>
+                                <i class="bi bi-file-earmark-pdf-fill"></i>
 
-                <span>{{ archivo.name }}</span>
+                                <span>{{ archivo.name }}</span>
 
-            </div>
+                            </div>
 
-            <button
-                type="button"
-                class="file-remove"
-                (click)="eliminarAdjunto(i)">
+                            <button type="button" class="file-remove" (click)="eliminarAdjunto(i)">
 
-                <i class="bi bi-x-lg"></i>
+                                <i class="bi bi-x-lg"></i>
 
-            </button>
+                            </button>
 
-        </div>
+                        </div>
 
-    }
+                        }
 
-</div>
+                    </div>
 
                     <span class="upload-more">
                         + Agregar más documentos

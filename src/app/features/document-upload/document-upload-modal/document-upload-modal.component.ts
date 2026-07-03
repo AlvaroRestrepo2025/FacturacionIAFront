@@ -8,13 +8,16 @@ import {
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { Empresa } from '../../../shared/models/empresa.model';
 
 @Component({
   selector: 'app-document-upload-modal',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    NgSelectModule
   ],
   templateUrl: './document-upload-modal.component.html',
   styleUrl: './document-upload-modal.component.css'
@@ -28,6 +31,9 @@ export class DocumentUploadModalComponent implements OnInit {
   document: any = null;
 
   @Input()
+  empresas: Empresa[] = [];
+
+  @Input()
   isSaving = false;
 
   @Output()
@@ -38,9 +44,7 @@ export class DocumentUploadModalComponent implements OnInit {
 
   form = {
 
-    nit: '',
-
-    empresa: '',
+    idEmpresa: null as number | null,
 
     estado: 'Activo'
 
@@ -49,22 +53,16 @@ export class DocumentUploadModalComponent implements OnInit {
   documentosAdjuntos: File[] = [];
 
   errors = {
-
-    nit: '',
-
     empresa: '',
-
     archivos: ''
-
   };
-
   ngOnInit(): void {
+
+    console.log(this.form.idEmpresa);
 
     if (this.mode === 'editar' && this.document) {
 
-      this.form.nit = this.document.nit;
-
-      this.form.empresa = this.document.empresa;
+      this.form.idEmpresa = this.document.idEmpresa;
 
       this.form.estado = this.document.estado;
 
@@ -164,30 +162,16 @@ export class DocumentUploadModalComponent implements OnInit {
 
     this.errors = {
 
-      nit: '',
-
       empresa: '',
 
       archivos: ''
 
     };
 
-    if (!this.form.nit.trim()) {
 
-      this.errors.nit =
+    if (!this.form.idEmpresa) {
 
-        'El NIT es obligatorio.';
-
-      valid = false;
-
-    }
-
-    if (!this.form.empresa.trim()) {
-
-      this.errors.empresa =
-
-        'La empresa es obligatoria.';
-
+      this.errors.empresa = 'Debe seleccionar una empresa.';
       valid = false;
 
     }
@@ -228,9 +212,7 @@ export class DocumentUploadModalComponent implements OnInit {
 
     this.saveModal.emit({
 
-      nit: this.form.nit.trim(),
-
-      empresa: this.form.empresa.trim(),
+      idEmpresa: this.form.idEmpresa,
 
       estado: this.form.estado,
 
@@ -245,5 +227,16 @@ export class DocumentUploadModalComponent implements OnInit {
     this.closeModal.emit();
 
   }
+
+  buscarEmpresa = (termino: string, empresa: Empresa): boolean => {
+
+    termino = termino.toLowerCase();
+
+    return (
+      empresa.razonSocial.toLowerCase().includes(termino) ||
+      empresa.nit.toLowerCase().includes(termino)
+    );
+
+  };
 
 }
