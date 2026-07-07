@@ -1,0 +1,165 @@
+<div class="eu-page">
+    <!-- Header -->
+    <div class="eu-page__header">
+
+        <h1 class="eu-page__title">
+            Carga y procesamiento de documentos
+        </h1>
+
+        <div class="eu-page__header-row">
+
+            <div class="eu-page__header-left">
+                <button class="btn btn-outline" (click)="goBack()">
+                    <i class="bi bi-arrow-left"></i>
+                    Atrás
+                </button>
+            </div>
+
+            <div class="eu-page__search">
+                <input type="text" class="search-input" placeholder="Buscar" [(ngModel)]="searchText"
+                    (ngModelChange)="onSearchChange()" />
+
+                <span class="search-input__icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                </span>
+            </div>
+
+            <div class="eu-page__header-right">
+                <button class="btn btn-primary" (click)="openCrearModal()">
+                    <i class="bi bi-plus-lg"></i>
+                    Nuevo
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Tabla -->
+    <div class="eu-page__content">
+        <div class="table-wrapper">
+            <table class="eu-table">
+                <thead>
+
+                    <tr>
+
+                        <th>NIT</th>
+
+                        <th>Empresa</th>
+
+                        <th>Cantidad archivos</th>
+
+                        <th>Usuario creación</th>
+
+                        <th>Fecha creación</th>
+
+                        <th>Usuario modificación</th>
+
+                        <th>Fecha modificación</th>
+
+                        <th>Estado</th>
+
+                        <th>Acciones</th>
+
+                    </tr>
+
+                </thead>
+                <tbody>
+
+                    @if (pagedDocuments.length === 0) {
+
+                    <tr>
+
+                        <td colspan="9" class="eu-table__empty">
+
+                            No existen documentos cargados.
+
+                        </td>
+
+                    </tr>
+
+                    }
+
+                    @for(item of pagedDocuments;track item){
+
+                    <tr>
+
+                        <td>{{item.nit}}</td>
+
+                        <td>{{item.empresa}}</td>
+
+                        <td>{{item.cantidadArchivos}}</td>
+
+                        <td>{{item.usuarioCreacion}}</td>
+
+                        <td>{{item.fechaCreacion | date:'dd/MM/yyyy'}}</td>
+
+                        <td>{{ item.usuarioModificacion || "—" }}</td>
+
+                        <td>{{ item.fechaModificacion ? (item.fechaModificacion | date:'dd/MM/yyyy') : "—" }}</td>
+
+                        <td>
+
+                            <span class="badge" [class.badge--active]="item.estado === 'Activo'"
+                                [class.badge--inactive]="item.estado === 'Inactivo'"
+                                [class.badge--processed]="item.estado === 'Procesado'">
+
+                                {{ item.estado }}
+
+                            </span>
+
+                        </td>
+
+                        <td class="actions-cell">
+
+                            <i class="bi bi-pencil-square action-icon action-icon--edit"
+                                (click)="openEditarModal(item)"></i>
+
+                            @if (item.estado === 'Activo') {
+
+                            <i class="bi bi-play-circle-fill action-icon action-icon--process" (click)="procesar(item)"
+                                title="Procesar">
+                            </i>
+
+                            }
+
+                        </td>
+
+                    </tr>
+
+                    }
+
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginador -->
+        <div class="paginator">
+            <button class="paginator__btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+                &laquo;
+            </button>
+            @for (page of pages; track page) {
+            <button class="paginator__btn" [class.paginator__btn--active]="page === currentPage"
+                (click)="goToPage(page)">
+                {{ page }}
+            </button>
+            }
+            <button class="paginator__btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+                &raquo;
+            </button>
+        </div>
+    </div>
+</div>
+
+@if (isModalOpen) {
+
+<app-document-upload-modal [mode]="modalMode" [document]="selectedDocument" [empresas]="empresas" [isSaving]="isSaving"
+    (closeModal)="onModalClose()" (saveModal)="onModalSave($event)">
+
+</app-document-upload-modal>
+
+}

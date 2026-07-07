@@ -43,6 +43,15 @@ export const routes: Routes = [
             (m) => m.ExternalUsersListComponent,
           ),
       },
+      {
+        path: 'carga-documentos',
+        loadComponent: () =>
+          import(
+            './features/document-upload/document-upload-list/document-upload-list.component'
+          ).then(
+            (m) => m.DocumentUploadListComponent
+          ),
+      },
     ],
   },
   {

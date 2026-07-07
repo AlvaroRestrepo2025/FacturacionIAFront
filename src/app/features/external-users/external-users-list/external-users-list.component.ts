@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { ExternalUserModalComponent } from '../external-user-modal/external-user-modal.component';
 import { ExternalUsersService } from '../../../core/services/external-users.service';
 import { ExternalUser } from '../external-user.model';
+import { AlertService } from '../../../core/services/alert.service';
 
 @Component({
   selector: 'app-external-users-list',
@@ -29,8 +30,9 @@ export class ExternalUsersListComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private externalUsersService: ExternalUsersService
-  ) {}
+    private externalUsersService: ExternalUsersService,
+    private alert: AlertService
+  ) { }
 
   ngOnInit(): void {
     this.cargarUsuarios();
@@ -114,12 +116,17 @@ export class ExternalUsersListComponent implements OnInit {
 
     this.isSaving = true;
 
+    // Nombre del usuario logueado
+    const usuarioActual =
+      `${sessionStorage.getItem('Nombre') ?? ''} ${sessionStorage.getItem('Apellido') ?? ''}`.trim();
+
     if (this.modalMode === 'crear') {
 
       const nuevoUsuario = {
         nombre: user.nombre,
         correo: user.correo,
-        notas: user.notas
+        notas: user.notas,
+        usuarioRegistro: usuarioActual
       };
 
       this.externalUsersService
@@ -133,7 +140,7 @@ export class ExternalUsersListComponent implements OnInit {
 
             this.cargarUsuarios();
 
-            alert('Usuario creado correctamente');
+            this.alert.success('Usuario creado correctamente.');
           },
           error: (error) => {
 
@@ -141,7 +148,11 @@ export class ExternalUsersListComponent implements OnInit {
 
             console.error(error);
 
-            alert('Error creando usuario');
+            this.alert.error(
+              error?.error?.mensaje ??
+              error?.error ??
+              'Ocurrió un error al crear el usuario.'
+            );
           }
         });
 
@@ -150,6 +161,7 @@ export class ExternalUsersListComponent implements OnInit {
 
     const usuarioActualizar = {
       idUsuarioExterno: user.idUsuarioExterno,
+      usuarioModificacion: usuarioActual,
       nombre: user.nombre,
       correo: user.correo,
       notas: user.notas,
@@ -167,7 +179,7 @@ export class ExternalUsersListComponent implements OnInit {
 
           this.cargarUsuarios();
 
-          alert('Usuario actualizado correctamente');
+          this.alert.success('Usuario actualizado correctamente.');
         },
         error: (error) => {
 
@@ -175,7 +187,11 @@ export class ExternalUsersListComponent implements OnInit {
 
           console.error(error);
 
-          alert('Error actualizando usuario');
+          this.alert.error(
+            error?.error?.mensaje ??
+            error?.error ??
+            'Ocurrió un error al actualizar el usuario.'
+          );
         }
       });
   }
