@@ -98,9 +98,9 @@
 
                         <td>{{item.fechaCreacion | date:'dd/MM/yyyy'}}</td>
 
-                        <td>{{item.usuarioModificacion}}</td>
+                        <td>{{ item.usuarioModificacion || "—" }}</td>
 
-                        <td>{{item.fechaModificacion | date:'dd/MM/yyyy'}}</td>
+                        <td>{{ item.fechaModificacion ? (item.fechaModificacion | date:'dd/MM/yyyy') : "—" }}</td>
 
                         <td>
 
