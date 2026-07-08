@@ -1,0 +1,189 @@
+<div class="modal-overlay" (click)="onCancelar()">
+    <div class="modal" (click)="$event.stopPropagation()">
+
+        <!-- Header -->
+        <div class="modal__header">
+            <h2 class="modal__title">{{ title }}</h2>
+        </div>
+
+        <!-- Body -->
+        <div class="modal__body">
+
+            <!-- Primera fila -->
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        Empresa <span class="required">*</span>
+                    </label>
+
+                    <ng-select [items]="empresas" bindLabel="razonSocial" bindValue="idEmpresa"
+                        [(ngModel)]="form.idEmpresa" placeholder="Buscar por NIT o razón social..." [searchable]="true"
+                        [clearable]="true" notFoundText="No se encontró ninguna empresa" [searchFn]="buscarEmpresa">
+
+                        <ng-template ng-label-tmp let-item="item">
+                            <span class="empresa-seleccionada">
+                                {{ item.razonSocial }}
+                            </span>
+                        </ng-template>
+
+                        <ng-template ng-option-tmp let-item="item">
+
+                            <div class="empresa-opcion">
+
+                                <div class="empresa-opcion__nit">
+                                    {{ item.nit }}
+                                </div>
+
+                                <div class="empresa-opcion__nombre">
+                                    {{ item.razonSocial }}
+                                </div>
+
+                            </div>
+
+                        </ng-template>
+
+                    </ng-select>
+
+                    @if (errors.empresa) {
+
+                    <span class="form-error">
+
+                        {{ errors.empresa }}
+
+                    </span>
+
+                    }
+
+                </div>
+
+                <!-- Estado -->
+                @if (mode === 'editar') {
+
+                <div class="form-group form-group--estado">
+
+                    <label class="form-label">
+
+                        Estado
+
+                    </label>
+
+                    <select class="form-input form-input--select" [(ngModel)]="form.estado">
+
+                        <option value="Activo">
+                            Activo
+                        </option>
+
+                        <option value="Inactivo">
+                            Inactivo
+                        </option>
+
+                    </select>
+
+                </div>
+
+                }
+
+            </div>
+
+            <!-- Documentos -->
+            <div class="form-group">
+
+                <label class="form-label">
+                    Documentos PDF
+                    <span class="required">*</span>
+                </label>
+
+                <label class="upload-box">
+
+                    <input hidden type="file" multiple accept=".pdf" (change)="seleccionarArchivos($event)">
+
+                    @if (documentosAdjuntos.length === 0) {
+
+                    <i class="bi bi-file-earmark-pdf upload-icon"></i>
+
+                    <span class="upload-title">
+                        Arrastre o seleccione uno o varios documentos PDF
+                    </span>
+
+                    <span class="upload-subtitle">
+                        Máximo 20 MB por archivo<br>
+                        Máximo 100 MB por carga
+                    </span>
+
+                    <span class="btn btn-outline upload-button">
+                        Seleccionar documentos
+                    </span>
+
+                    }
+
+                    @if (documentosAdjuntos.length > 0) {
+
+                    <div class="files-list">
+
+                        @for (archivo of documentosAdjuntos;
+                        track archivo.name;
+                        let i = $index) {
+
+                        <div class="file-item">
+
+                            <div class="file-item__left">
+
+                                <i class="bi bi-file-earmark-pdf-fill"></i>
+
+                                <span>{{ archivo.name }}</span>
+
+                            </div>
+
+                            <button type="button" class="file-remove" (click)="eliminarAdjunto(i)">
+
+                                <i class="bi bi-x-lg"></i>
+
+                            </button>
+
+                        </div>
+
+                        }
+
+                    </div>
+
+                    <span class="upload-more">
+                        + Agregar más documentos
+                    </span>
+
+                    }
+
+                </label>
+
+                @if (errors.archivos) {
+
+                <span class="form-error">
+                    {{ errors.archivos }}
+                </span>
+
+                }
+
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="modal__footer">
+
+            <button class="btn btn-outline" (click)="onCancelar()">
+
+                Cancelar
+
+            </button>
+
+            <button class="btn btn-primary" (click)="onAceptar()" [disabled]="isSaving">
+
+                {{ isSaving ? 'Guardando...' : 'Aceptar' }}
+
+            </button>
+
+        </div>
+
+    </div>
+</div>

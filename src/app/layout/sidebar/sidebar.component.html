@@ -1,35 +1,61 @@
 <aside class="sidebar" [class.sidebar--collapsed]="isCollapsed">
-  <button class="sidebar-toggle" type="button" (click)="toggleSidebar()">
+  <button
+    class="sidebar-toggle"
+    type="button"
+    (click)="toggleSidebar()">
+
     <i class="bi bi-list"></i>
+
   </button>
 
-  <!-- Encabezado de marca -->
+  <!-- Encabezado -->
   <header class="sidebar-header">
+
     @if (!isCollapsed) {
+
       <div class="sidebar-brand">
+
         <span class="brand-name">POSITIVO</span>
+
         <span class="brand-symbol">S+</span>
+
       </div>
 
-      <p class="sidebar-system-name">Facturación IA</p>
+      <p class="sidebar-system-name">
+        Facturación IA
+      </p>
+
     }
 
     @if (isCollapsed) {
+
       <div class="sidebar-brand-collapsed">
+
         <span class="brand-name">P</span>
+
         <span class="brand-symbol">S+</span>
+
       </div>
+
     }
+
   </header>
 
-  <!-- Información del usuario -->
+  <!-- Usuario -->
   <section class="sidebar-user">
-    <div class="user-avatar" aria-hidden="true">
+
+    <div
+      class="user-avatar"
+      aria-hidden="true">
+
       {{ nombreUsuario.charAt(0).toUpperCase() }}
+
     </div>
 
     @if (!isCollapsed) {
+
       <div class="user-information">
+
         <span class="user-name">
           {{ nombreUsuario }}
         </span>
@@ -37,23 +63,35 @@
         <span class="user-role">
           {{ rolUsuario }}
         </span>
+
       </div>
+
     }
+
   </section>
 
-  <!-- Menú principal -->
-  <nav class="sidebar-navigation" aria-label="Navegación principal">
+  <!-- Menú -->
+  <nav
+    class="sidebar-navigation"
+    aria-label="Navegación principal">
+
     @if (!isCollapsed) {
-      <p class="navigation-title">Menú</p>
+
+      <p class="navigation-title">
+        Menú
+      </p>
+
     }
 
     @if (mostrarPanelPrincipal) {
+
+      <!-- Panel principal -->
       <a
         class="navigation-item"
         routerLink="/dashboard"
         routerLinkActive="navigation-item-active"
-        [routerLinkActiveOptions]="{ exact: true }"
-      >
+        [routerLinkActiveOptions]="{ exact: true }">
+
         <span class="navigation-icon">
           <i class="bi bi-grid-1x2-fill"></i>
         </span>
@@ -61,64 +99,98 @@
         @if (!isCollapsed) {
           <span>Panel principal</span>
         }
-      </a>
-    }
 
-    @if (mostrarMenuEmpresas) {
+      </a>
+
+      @if (mostrarMenuEmpresas) {
+
+        <!-- Empresas -->
+        <a
+          class="navigation-item"
+          routerLink="/dashboard/empresas"
+          routerLinkActive="navigation-item-active">
+
+          <span class="navigation-icon">
+            <i class="bi bi-building"></i>
+          </span>
+
+          @if (!isCollapsed) {
+            <span>Empresas</span>
+          }
+
+        </a>
+
+      }
+
+      @if (mostrarMenuRegistrosFacturacion) {
+
+        <!-- Registros de facturación -->
+        <a
+          class="navigation-item"
+          routerLink="/dashboard/registros-facturacion"
+          routerLinkActive="navigation-item-active">
+
+          <span class="navigation-icon">
+            <i class="bi bi-file-earmark-text"></i>
+          </span>
+
+          @if (!isCollapsed) {
+            <span>Registros de facturación</span>
+          }
+
+        </a>
+
+      }
+
+      @if (mostrarMenuUsuariosExternos) {
+
+        <!-- Usuarios externos -->
+        <a
+          class="navigation-item"
+          routerLink="/dashboard/usuarios-externos"
+          routerLinkActive="navigation-item-active">
+
+          <span class="navigation-icon">
+            <i class="bi bi-people-fill"></i>
+          </span>
+
+          @if (!isCollapsed) {
+            <span>Gestión de usuarios externos</span>
+          }
+
+        </a>
+
+      }
+
+      <!-- Carga documentos -->
       <a
         class="navigation-item"
-        routerLink="/dashboard/empresas"
-        routerLinkActive="navigation-item-active"
-      >
+        routerLink="/dashboard/carga-documentos"
+        routerLinkActive="navigation-item-active">
+
         <span class="navigation-icon">
-          <i class="bi bi-building"></i>
+          <i class="bi bi-file-earmark-pdf-fill"></i>
         </span>
 
         @if (!isCollapsed) {
-          <span>Empresas</span>
+          <span>Carga documentos / PDF</span>
         }
-      </a>
-    }
-    @if (mostrarMenuRegistrosFacturacion) {
-  <a
-    class="navigation-item"
-    routerLink="/dashboard/registros-facturacion"
-    routerLinkActive="navigation-item-active"
-  >
-    <span class="navigation-icon">
-      <i class="bi bi-file-earmark-text"></i>
-    </span>
 
-    @if (!isCollapsed) {
-      <span>Registros de facturación</span>
-    }
-    </a>
-    } 
-    @if (mostrarMenuUsuariosExternos) {
-      <a
-        class="navigation-item"
-        routerLink="/dashboard/usuarios-externos"
-        routerLinkActive="navigation-item-active"
-      >
-        <span class="navigation-icon">
-          <i class="bi bi-people-fill"></i>
-        </span>
-
-        @if (!isCollapsed) {
-          <span>Gestión de usuarios externos</span>
-        }
       </a>
+
     }
+
   </nav>
 
-  <!-- Zona inferior del menú -->
+  <!-- Footer -->
   <footer class="sidebar-footer">
+
     <button
       class="btn btn-logout logout-button"
       type="button"
       aria-label="Cerrar sesión"
-      (click)="logout()"
-    >
+      (click)="logout()">
+
       <span class="logout-icon">
         <i class="bi bi-box-arrow-right"></i>
       </span>
@@ -126,6 +198,9 @@
       @if (!isCollapsed) {
         <span>Cerrar sesión</span>
       }
+
     </button>
+
   </footer>
+
 </aside>
