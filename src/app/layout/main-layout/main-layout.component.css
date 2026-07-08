@@ -1,28 +1,214 @@
 /* =========================================================
    MAIN LAYOUT COMPONENT
-   Contenedor principal de las pantallas protegidas
+   Master page de pantallas protegidas
+   Header + zona central + footer
    ========================================================= */
 
 :host {
   display: block;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
-/* Estructura general */
+/* =========================================================
+   ESTRUCTURA GENERAL
+   ========================================================= */
+
 .main-layout {
   display: flex;
+  flex-direction: column;
+
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 
   background-color: var(--color-surface);
 }
 
-/* Área donde se mostrarán las rutas internas */
-.main-content {
-  flex: 1;
-  min-width: 0;
-  min-height: 100vh;
+/* =========================================================
+   HEADER GLOBAL
+   Basado visualmente en el login
+   ========================================================= */
+
+.main-header-bar {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  height: 76px;
+  padding: 0 24px;
+
+  background-color: #a1adad;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.brand-text {
+  color: #000000;
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+.brand-plus {
+  color: #10d451;
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+/* =========================================================
+   ZONA CENTRAL
+   Sidebar + contenido interno
+   ========================================================= */
+
+.main-layout-body {
+  flex: 1 1 auto;
+
+  display: flex;
+  align-items: stretch;
+
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
 
   background-color: var(--color-surface);
+}
+
+/* Área donde se muestran las rutas internas */
+.main-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+
+  background-color: var(--color-surface);
+
   overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* =========================================================
+   FOOTER GLOBAL
+   Basado visualmente en el login
+   ========================================================= */
+
+.main-footer {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 24px;
+  flex-shrink: 0;
+
+  height: 82px;
+  padding: 18px 32px;
+
+  background-color: #a1adad;
+}
+
+.footer-brand {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.footer-brand-text,
+.footer-brand-plus {
+  color: #000000;
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.footer-brand-plus {
+  font-size: 18px;
+}
+
+.footer-social {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.footer-social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 35px;
+  height: 35px;
+
+  background-color: #f0f0f0;
+  border-radius: 50%;
+
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.footer-social a:hover {
+  background-color: #dddddd;
+}
+
+.footer-social svg {
+  width: 20px;
+  height: 20px;
+
+  fill: #555555;
+  transition:
+    transform 0.3s ease,
+    fill 0.3s ease;
+}
+
+.footer-social a:hover svg {
+  fill: #000000;
+  transform: scale(1.1);
+}
+
+.footer-tech {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-self: center;
+
+  color: #000000;
+  font-weight: 900;
+}
+
+.footer-tech span {
+  font-size: 15px;
+  line-height: 1.1;
+}
+
+.footer-tech small {
+  font-size: 10px;
+  font-weight: 800;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .main-header-bar {
+    justify-content: center;
+  }
+
+  .brand-text,
+  .brand-plus {
+    font-size: 30px;
+  }
+
+  .main-footer {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    height: auto;
+    min-height: 82px;
+    text-align: center;
+  }
 }

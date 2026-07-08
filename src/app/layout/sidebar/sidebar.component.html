@@ -79,7 +79,21 @@
         }
       </a>
     }
+    @if (mostrarMenuRegistrosFacturacion) {
+  <a
+    class="navigation-item"
+    routerLink="/dashboard/registros-facturacion"
+    routerLinkActive="navigation-item-active"
+  >
+    <span class="navigation-icon">
+      <i class="bi bi-file-earmark-text"></i>
+    </span>
 
+    @if (!isCollapsed) {
+      <span>Registros de facturación</span>
+    }
+    </a>
+    } 
     @if (mostrarMenuUsuariosExternos) {
       <a
         class="navigation-item"
