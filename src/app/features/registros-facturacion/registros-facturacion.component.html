@@ -1,0 +1,282 @@
+<section class="registros-page">
+  <!--==================================================
+  = ENCABEZADO
+  ==================================================-->
+  <div class="registros-toolbar">
+    <h1>Registros de Facturación</h1>
+  </div>
+
+  <!--==================================================
+  = BÚSQUEDA
+  ==================================================-->
+  <div class="registros-search-wrapper">
+    <button
+      class="btn-custom btn-back"
+      type="button"
+      (click)="volverAlPanelPrincipal()"
+    >
+      <span aria-hidden="true">←</span>
+      Atrás
+    </button>
+
+    <div class="registros-search-center">
+      <div class="registros-search-box">
+        <input
+          class="search-control"
+          type="text"
+          placeholder="Buscar"
+          [(ngModel)]="busqueda"
+          (keyup.enter)="consultar()"
+        />
+
+        <button
+          class="search-button"
+          type="button"
+          aria-label="Buscar registros"
+          (click)="consultar()"
+        >
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
+
+      <button
+        class="btn-custom btn-clear-search"
+        type="button"
+        (click)="limpiarFiltros()"
+      >
+        Limpiar
+      </button>
+    </div>
+
+    <button
+      class="btn-custom btn-new"
+      type="button"
+      (click)="exportarSeleccionados()"
+    >
+      Exportar
+    </button>
+  </div>
+
+  <!--==================================================
+  = FILTROS
+  ==================================================-->
+  <div class="filters-grid">
+    <div class="filter-group">
+      <label for="estado">Estado</label>
+      <select
+        id="estado"
+        [(ngModel)]="estado"
+      >
+        <option value="">Todos</option>
+        <option value="PROCESADO">PROCESADO</option>
+        <option value="FACTURADO">FACTURADO</option>
+        <option value="ACTIVO">ACTIVO</option>
+        <option value="INACTIVO">INACTIVO</option>
+        <option value="INCONSISTENCIA">INCONSISTENCIA</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="fechaInicio">Fecha inicio</label>
+      <input
+        id="fechaInicio"
+        type="date"
+        [(ngModel)]="fechaInicio"
+      />
+    </div>
+
+    <div class="filter-group">
+      <label for="fechaFin">Fecha fin</label>
+      <input
+        id="fechaFin"
+        type="date"
+        [(ngModel)]="fechaFin"
+      />
+    </div>
+
+    <div class="filter-actions">
+      <button
+        class="btn-custom btn-consult"
+        type="button"
+        (click)="consultar()"
+      >
+        Consultar
+      </button>
+    </div>
+  </div>
+
+  <!--==================================================
+  = MENSAJES
+  ==================================================-->
+  <p
+    *ngIf="cargando"
+    class="status-message"
+  >
+    Cargando registros...
+  </p>
+
+  <p
+    *ngIf="!cargando && mensaje !== '' && registros.length > 0"
+    class="status-message"
+  >
+    {{ mensaje }}
+  </p>
+
+  <!--==================================================
+  = TABLA
+  ==================================================-->
+  <div class="table-card">
+    <div class="table-container">
+      <table class="registros-table">
+        <thead>
+          <tr>
+            <th class="checkbox-column checkbox-header">
+              <div class="checkbox-header-content">
+                <span class="checkbox-header-label">Todos</span>
+                <input
+                  #checkboxSeleccionTodos
+                  type="checkbox"
+                  [checked]="todosSeleccionados()"
+                  (change)="toggleSeleccionTodos($event)"
+                />
+              </div>
+            </th>
+
+            <th class="sortable-column">
+              <button
+                class="sort-button"
+                type="button"
+                (click)="ordenarPorNumero()"
+              >
+                No.
+                <span class="sort-indicator">
+                  {{ obtenerIndicadorOrdenNumero() }}
+                </span>
+              </button>
+            </th>
+
+            <th>Fecha</th>
+            <th>Razón Social</th>
+            <th>Ciudad</th>
+            <th>Descripción</th>
+            <th>Valor</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngIf="cargando">
+            <td
+              colspan="8"
+              class="empty-table"
+            >
+              Cargando registros...
+            </td>
+          </tr>
+
+          <tr *ngIf="!cargando && registros.length === 0">
+            <td
+              colspan="8"
+              class="empty-table"
+            >
+              {{ mensaje !== '' ? mensaje : 'No hay registros para mostrar.' }}
+            </td>
+          </tr>
+
+          <tr *ngFor="let registro of registros">
+            <td class="checkbox-column">
+              <input
+                type="checkbox"
+                [checked]="estaSeleccionado(registro.idRegistroFacturacion)"
+                (change)="toggleSeleccion(registro.idRegistroFacturacion, $event)"
+              />
+            </td>
+
+            <td>{{ registro.numeroRegistro }}</td>
+            <td>{{ registro.fechaCreacion | date:'yyyy-MM-dd' }}</td>
+            <td>{{ registro.razonSocial }}</td>
+            <td>{{ registro.ciudad }}</td>
+            <td>{{ registro.descripcion }}</td>
+            <td>{{ obtenerValorConMoneda(registro.valor, registro.moneda) }}</td>
+
+            <td>
+              <span
+                class="status-badge"
+                [ngClass]="obtenerClaseEstado(registro.estado)"
+              >
+                {{ registro.estado }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!--==================================================
+    = PAGINADOR
+    ==================================================-->
+    <div
+      class="paginator"
+      *ngIf="!cargando && registros.length > 0"
+    >
+      <button
+        class="page-button"
+        type="button"
+        [disabled]="pagina <= 1"
+        (click)="paginaAnterior()"
+      >
+        «
+      </button>
+
+      <span class="page-current">
+        {{ pagina }}
+      </span>
+
+      <button
+        class="page-button"
+        type="button"
+        [disabled]="!tienePaginaSiguiente"
+        (click)="paginaSiguiente()"
+      >
+        »
+      </button>
+    </div>
+  </div>
+
+  <!--==================================================
+  = MODAL
+  ==================================================-->
+  <div
+    class="modal-backdrop-custom"
+    *ngIf="mostrarModalMensaje"
+  >
+    <div class="modal-card">
+      <div class="modal-header-custom">
+        <h2>{{ tituloModal }}</h2>
+
+        <button
+          class="modal-close"
+          type="button"
+          aria-label="Cerrar modal"
+          (click)="cerrarModal()"
+        >
+          ×
+        </button>
+      </div>
+
+      <div class="modal-body-custom">
+        <p>{{ detalleModal }}</p>
+      </div>
+
+      <div class="modal-actions">
+        <button
+          class="btn-custom btn-accept"
+          type="button"
+          (click)="cerrarModal()"
+        >
+          Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

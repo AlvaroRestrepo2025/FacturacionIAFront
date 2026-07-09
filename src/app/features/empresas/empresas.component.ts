@@ -1,9 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  inject
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
+import { Moneda } from '../../core/models/moneda.model';
 import { EmpresaService } from '../../core/services/empresa.service';
+import { MonedaService } from '../../core/services/moneda.service';
 import { ActualizarEmpresaRequest } from '../../shared/models/actualizar-empresa-request.model';
 import { CrearEmpresaRequest } from '../../shared/models/crear-empresa-request.model';
 import { Empresa } from '../../shared/models/empresa.model';
@@ -15,11 +22,15 @@ import { Empresa } from '../../shared/models/empresa.model';
   templateUrl: './empresas.component.html',
   styleUrl: './empresas.component.css'
 })
-export class EmpresasComponent implements OnInit {
+export class EmpresasComponent implements OnInit, OnDestroy {
   private readonly empresaService = inject(EmpresaService);
+  private readonly monedaService = inject(MonedaService);
   private readonly router = inject(Router);
 
+  private mensajeTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
   empresas: Empresa[] = [];
+  monedas: Moneda[] = [];
 
   busqueda = '';
   mensaje = '';
@@ -30,6 +41,7 @@ export class EmpresasComponent implements OnInit {
   totalRegistros = 0;
 
   cargando = false;
+  cargandoMonedas = false;
   guardando = false;
 
   mostrarModal = false;
@@ -51,12 +63,55 @@ export class EmpresasComponent implements OnInit {
   };
 
   ngOnInit(): void {
-    this.cargarEmpresas();
+    this.cargarMonedas();
+    this.cargarEmpresas(false);
   }
 
-  cargarEmpresas(): void {
+  ngOnDestroy(): void {
+    this.limpiarTemporizadorMensaje();
+  }
+
+  cargarMonedas(): void {
+    this.cargandoMonedas = true;
+
+    this.monedaService.listarMonedas().subscribe({
+      next: (response) => {
+        this.cargandoMonedas = false;
+
+        if (response.exito) {
+          this.monedas = response.monedas;
+
+          if (!this.formularioEmpresa.moneda) {
+            this.formularioEmpresa.moneda = this.obtenerMonedaPorDefecto();
+          }
+
+          return;
+        }
+
+        this.monedas = [];
+        this.mostrarMensajeTemporal(
+          response.mensaje || 'No fue posible cargar las monedas.',
+          7000
+        );
+      },
+      error: () => {
+        this.cargandoMonedas = false;
+        this.monedas = [];
+
+        this.mostrarMensajeTemporal(
+          'No fue posible cargar las monedas. Verifica que el backend esté en ejecución.',
+          7000
+        );
+      }
+    });
+  }
+
+  cargarEmpresas(mostrarMensajeConsulta = false): void {
     this.cargando = true;
-    this.mensaje = '';
+
+    if (!mostrarMensajeConsulta) {
+      this.limpiarMensaje();
+    }
 
     this.empresaService.listarEmpresas(
       this.busqueda,
@@ -68,27 +123,34 @@ export class EmpresasComponent implements OnInit {
         this.totalRegistros = response.totalRegistros;
         this.pagina = response.pagina;
         this.cantidadRegistros = response.cantidadRegistros;
-        this.mensaje = response.mensaje;
         this.cargando = false;
+
+        if (mostrarMensajeConsulta && response.mensaje) {
+          this.mostrarMensajeTemporal(response.mensaje);
+        }
       },
       error: () => {
         this.empresas = [];
         this.totalRegistros = 0;
-        this.mensaje = 'No fue posible cargar las empresas. Verifica que el backend esté en ejecución.';
         this.cargando = false;
+
+        this.mostrarMensajeTemporal(
+          'No fue posible cargar las empresas. Verifica que el backend esté en ejecución.',
+          7000
+        );
       }
     });
   }
 
   buscarEmpresas(): void {
     this.pagina = 1;
-    this.cargarEmpresas();
+    this.cargarEmpresas(true);
   }
 
   limpiarBusqueda(): void {
     this.busqueda = '';
     this.pagina = 1;
-    this.cargarEmpresas();
+    this.cargarEmpresas(true);
   }
 
   paginaAnterior(): void {
@@ -97,7 +159,7 @@ export class EmpresasComponent implements OnInit {
     }
 
     this.pagina--;
-    this.cargarEmpresas();
+    this.cargarEmpresas(false);
   }
 
   paginaSiguiente(): void {
@@ -106,7 +168,7 @@ export class EmpresasComponent implements OnInit {
     }
 
     this.pagina++;
-    this.cargarEmpresas();
+    this.cargarEmpresas(false);
   }
 
   abrirModalCrear(): void {
@@ -125,7 +187,7 @@ export class EmpresasComponent implements OnInit {
       supervisor: '',
       cr: '',
       ciudad: '',
-      moneda: 'COP',
+      moneda: this.obtenerMonedaPorDefecto(),
       estado: true
     };
   }
@@ -189,8 +251,11 @@ export class EmpresasComponent implements OnInit {
           this.mensajeFormulario = response.mensaje;
 
           if (response.exito) {
+            const mensajeExito = response.mensaje || 'Empresa creada correctamente.';
+
             this.mostrarModal = false;
-            this.cargarEmpresas();
+            this.cargarEmpresas(false);
+            this.mostrarMensajeTemporal(mensajeExito);
           }
         },
         error: () => {
@@ -227,8 +292,11 @@ export class EmpresasComponent implements OnInit {
         this.mensajeFormulario = response.mensaje;
 
         if (response.exito) {
+          const mensajeExito = response.mensaje || 'Los cambios han sido guardados correctamente.';
+
           this.mostrarModal = false;
-          this.cargarEmpresas();
+          this.cargarEmpresas(false);
+          this.mostrarMensajeTemporal(mensajeExito);
         }
       },
       error: () => {
@@ -280,6 +348,48 @@ export class EmpresasComponent implements OnInit {
     }
 
     return null;
+  }
+
+  private obtenerMonedaPorDefecto(): string {
+    const monedaCop = this.monedas.find(
+      moneda => moneda.moneda.toUpperCase() === 'COP'
+    );
+
+    if (monedaCop) {
+      return monedaCop.moneda;
+    }
+
+    if (this.monedas.length > 0) {
+      return this.monedas[0].moneda;
+    }
+
+    return 'COP';
+  }
+
+  private mostrarMensajeTemporal(
+    mensaje: string,
+    duracionMs = 5000
+  ): void {
+    this.limpiarTemporizadorMensaje();
+
+    this.mensaje = mensaje;
+
+    this.mensajeTimeoutId = setTimeout(() => {
+      this.mensaje = '';
+      this.mensajeTimeoutId = null;
+    }, duracionMs);
+  }
+
+  private limpiarMensaje(): void {
+    this.limpiarTemporizadorMensaje();
+    this.mensaje = '';
+  }
+
+  private limpiarTemporizadorMensaje(): void {
+    if (this.mensajeTimeoutId) {
+      clearTimeout(this.mensajeTimeoutId);
+      this.mensajeTimeoutId = null;
+    }
   }
 
   get tienePaginaSiguiente(): boolean {
