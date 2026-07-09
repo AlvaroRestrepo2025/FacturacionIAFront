@@ -1,133 +1,16 @@
 /* =========================================================
    DASHBOARD COMPONENT
-   Diseño alineado con Positivo S+
+   Diseño limpio sin tarjetas ni encabezado
    ========================================================= */
+
 
 :host {
   display: block;
 }
 
+
 /* Contenedor principal */
 .dashboard-page {
   width: 100%;
   padding: var(--spacing-xl);
-}
-
-/* Encabezado */
-.dashboard-header {
-  margin-bottom: var(--spacing-xl);
-}
-
-.dashboard-eyebrow {
-  margin-bottom: var(--spacing-sm);
-
-  color: var(--color-secondary);
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.dashboard-header h1 {
-  margin-bottom: var(--spacing-sm);
-}
-
-.dashboard-description {
-  max-width: 650px;
-  margin-bottom: 0;
-}
-
-/* Cuadrícula de tarjetas */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--spacing-lg);
-}
-
-/* Tarjetas informativas */
-.dashboard-card {
-  position: relative;
-
-  min-height: 220px;
-  padding: var(--spacing-lg);
-
-  background-color: var(--color-white);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-
-  transition:
-    transform var(--transition-fast),
-    box-shadow var(--transition-fast),
-    border-color var(--transition-fast);
-}
-
-.dashboard-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--color-primary);
-  box-shadow: var(--shadow-md);
-}
-
-/* Número identificador */
-.dashboard-card-number {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 42px;
-  height: 42px;
-  margin-bottom: var(--spacing-lg);
-
-  background-color: var(--color-gray-light);
-  border-radius: var(--radius-md);
-
-  color: var(--color-black);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-/* Título de cada tarjeta */
-.dashboard-card h2 {
-  margin-bottom: var(--spacing-sm);
-
-  font-size: 18px;
-  font-weight: 600;
-}
-
-/* Texto de cada tarjeta */
-.dashboard-card p {
-  margin-bottom: 0;
-  font-size: 14px;
-}
-
-/* Línea decorativa */
-.dashboard-card::after {
-  content: '';
-  position: absolute;
-  right: var(--spacing-lg);
-  bottom: var(--spacing-lg);
-
-  width: 48px;
-  height: 4px;
-
-  background-color: var(--color-primary);
-  border-radius: var(--radius-pill);
-}
-
-/* Pantallas medianas */
-@media (max-width: 1024px) {
-  .dashboard-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-/* Pantallas pequeñas */
-@media (max-width: 680px) {
-  .dashboard-page {
-    padding: var(--spacing-lg);
-  }
-
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
 }

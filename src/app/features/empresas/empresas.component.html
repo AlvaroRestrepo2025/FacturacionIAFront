@@ -281,11 +281,29 @@
 
           <label>
             Moneda
-            <input
-              type="text"
+            <select
               [(ngModel)]="formularioEmpresa.moneda"
               name="moneda"
-            />
+              [disabled]="cargandoMonedas || monedas.length === 0"
+            >
+              <option
+                value=""
+                disabled
+              >
+                {{
+                  cargandoMonedas
+                    ? 'Cargando monedas...'
+                    : 'Seleccione una moneda'
+                }}
+              </option>
+
+              <option
+                *ngFor="let moneda of monedas"
+                [value]="moneda.moneda"
+              >
+                {{ moneda.moneda }}
+              </option>
+            </select>
           </label>
 
           <label *ngIf="modoFormulario === 'editar'">
@@ -312,7 +330,7 @@
           <button
             class="btn-custom btn-accept"
             type="button"
-            [disabled]="guardando"
+            [disabled]="guardando || cargandoMonedas || monedas.length === 0"
             (click)="guardarEmpresa()"
           >
             {{ guardando ? 'Guardando...' : 'Aceptar' }}

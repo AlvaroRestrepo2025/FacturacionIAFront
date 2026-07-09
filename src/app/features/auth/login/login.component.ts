@@ -1,11 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  inject
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { SessionService } from '../../../core/services/session.service';
-import { LogoutRecord } from '../../../shared/models/logout-record.model';
 
 @Component({
   selector: 'app-login',
@@ -14,30 +18,36 @@ import { LogoutRecord } from '../../../shared/models/logout-record.model';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly sessionService = inject(SessionService);
   private readonly router = inject(Router);
+
+  private readonly lastLogoutRecordKey =
+    'facturacionia_last_logout';
+
+  private logoutMessageTimeoutId: ReturnType<typeof setTimeout> | null =
+    null;
 
   usuario = '';
   password = '';
   cargando = false;
   mensajeError = '';
+  logoutMessage: string | null = null;
 
-  get lastLogoutRecord(): LogoutRecord | null {
-    return this.authService.getLastLogoutRecord();
+  ngOnInit(): void {
+    const logoutRecord = this.authService.getLastLogoutRecord();
+
+    this.limpiarSeguridadAlEntrarLogin();
+
+    this.cargarMensajeCierreSesionUnaSolaVez(logoutRecord);
   }
 
-  get logoutMessage(): string | null {
-    const record = this.lastLogoutRecord;
-
-    if (!record) {
-      return null;
+  ngOnDestroy(): void {
+    if (this.logoutMessageTimeoutId) {
+      clearTimeout(this.logoutMessageTimeoutId);
+      this.logoutMessageTimeoutId = null;
     }
-
-    return record.tipoCierre === 'Inactividad'
-      ? 'Tu sesión fue cerrada por inactividad.'
-      : 'Sesión cerrada correctamente.';
   }
 
   login(): void {
@@ -55,46 +65,7 @@ export class LoginComponent {
 
     this.cargando = true;
 
-    this.authService.loginLDAP(this.usuario.trim(), this.password)
-      .subscribe({
-        next: (resp) => {
-          const respuesta = resp?.respuesta ?? resp?.Respuesta;
-          const resultado = resp?.resultado ?? resp?.Resultado;
-
-          if (respuesta === false) {
-            this.loginBD();
-            return;
-          }
-
-          const usuarioLDAP = Array.isArray(resultado)
-            ? resultado[0]
-            : resultado;
-
-          if (!usuarioLDAP) {
-            this.loginBD();
-            return;
-          }
-
-          const perteneceFacturacion = this.authService.perteneceFacturacion(usuarioLDAP);
-          const perteneceContabler = this.authService.perteneceContabler(usuarioLDAP);
-
-          if (!perteneceFacturacion && !perteneceContabler) {
-            this.cargando = false;
-            this.mostrarError('El usuario no pertenece al área de Facturación o Contabler.');
-            return;
-          }
-
-          this.guardarDatosUsuario(usuarioLDAP);
-
-          this.ingresarSistema(
-            resp?.jwt ?? resp?.JWT ?? null,
-            usuarioLDAP
-          );
-        },
-        error: () => {
-          this.loginBD();
-        }
-      });
+    this.loginBD();
   }
 
   private loginBD(): void {
@@ -113,8 +84,11 @@ export class LoginComponent {
             return;
           }
 
-          const perteneceFacturacion = this.authService.perteneceFacturacion(usuarioBD);
-          const perteneceContabler = this.authService.perteneceContabler(usuarioBD);
+          const perteneceFacturacion =
+            this.authService.perteneceFacturacion(usuarioBD);
+
+          const perteneceContabler =
+            this.authService.perteneceContabler(usuarioBD);
 
           if (!perteneceFacturacion && !perteneceContabler) {
             this.cargando = false;
@@ -131,13 +105,72 @@ export class LoginComponent {
         },
         error: () => {
           this.cargando = false;
-          this.mostrarError('Usuario o contraseña incorrectos, o el servicio no está disponible.');
+          this.mostrarError('Usuario o contraseña incorrectos.');
         }
       });
   }
 
+  private limpiarSeguridadAlEntrarLogin(): void {
+    if (this.logoutMessageTimeoutId) {
+      clearTimeout(this.logoutMessageTimeoutId);
+      this.logoutMessageTimeoutId = null;
+    }
+
+    this.logoutMessage = null;
+    this.mensajeError = '';
+    this.cargando = false;
+
+    this.sessionService.clearSession();
+
+    localStorage.removeItem(this.lastLogoutRecordKey);
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('perfil');
+
+    sessionStorage.clear();
+
+    this.borrarCookiesAccesibles();
+  }
+
+  private cargarMensajeCierreSesionUnaSolaVez(record: any | null): void {
+    if (!record) {
+      return;
+    }
+
+    this.logoutMessage = record.tipoCierre === 'Inactividad'
+      ? 'Tu sesión fue cerrada por inactividad.'
+      : 'Sesión cerrada correctamente.';
+
+    this.logoutMessageTimeoutId = setTimeout(() => {
+      this.logoutMessage = null;
+      this.logoutMessageTimeoutId = null;
+    }, 5000);
+  }
+
+  private borrarCookiesAccesibles(): void {
+    if (!document.cookie) {
+      return;
+    }
+
+    const cookies = document.cookie.split(';');
+
+    for (const cookie of cookies) {
+      const nombreCookie = cookie.split('=')[0]?.trim();
+
+      if (!nombreCookie) {
+        continue;
+      }
+
+      document.cookie =
+        `${nombreCookie}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+
+      document.cookie =
+        `${nombreCookie}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${window.location.hostname}`;
+    }
+  }
+
   private ingresarSistema(token: string | null, usuario: any): void {
-    const tokenFinal = token ?? 'token-local-facturacion-ia';
+    const tokenFinal = token ?? '';
 
     this.sessionService.saveSession(
       tokenFinal,
@@ -153,10 +186,39 @@ export class LoginComponent {
   }
 
   private guardarDatosUsuario(usuario: any): void {
-    sessionStorage.setItem('Rol', usuario?.cargo ?? usuario?.Cargo ?? usuario?.rol ?? usuario?.Rol ?? '');
-    sessionStorage.setItem('Nombre', usuario?.nombre ?? usuario?.Nombre ?? usuario?.name ?? usuario?.Name ?? '');
-    sessionStorage.setItem('Apellido', usuario?.apellido ?? usuario?.Apellido ?? '');
-    sessionStorage.setItem('Correo', usuario?.correo ?? usuario?.Correo ?? usuario?.email ?? usuario?.Email ?? '');
+    sessionStorage.setItem(
+      'Rol',
+      usuario?.cargo ??
+      usuario?.Cargo ??
+      usuario?.rol ??
+      usuario?.Rol ??
+      ''
+    );
+
+    sessionStorage.setItem(
+      'Nombre',
+      usuario?.nombre ??
+      usuario?.Nombre ??
+      usuario?.name ??
+      usuario?.Name ??
+      ''
+    );
+
+    sessionStorage.setItem(
+      'Apellido',
+      usuario?.apellido ??
+      usuario?.Apellido ??
+      ''
+    );
+
+    sessionStorage.setItem(
+      'Correo',
+      usuario?.correo ??
+      usuario?.Correo ??
+      usuario?.email ??
+      usuario?.Email ??
+      ''
+    );
   }
 
   private mostrarError(mensaje: string): void {
@@ -165,5 +227,6 @@ export class LoginComponent {
 
   private limpiarMensaje(): void {
     this.mensajeError = '';
+    this.logoutMessage = null;
   }
 }

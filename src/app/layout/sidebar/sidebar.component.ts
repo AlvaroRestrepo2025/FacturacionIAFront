@@ -37,6 +37,10 @@ export class SidebarComponent {
     return this.authService.isFacturacionUser();
   }
 
+  get mostrarMenuRegistrosFacturacion(): boolean {
+    return this.authService.isFacturacionUser();
+  }
+
   get mostrarMenuUsuariosExternos(): boolean {
     return this.authService.isContablerUser();
   }

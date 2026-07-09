@@ -15,11 +15,14 @@
   flex-direction: column;
 
   width: var(--sidebar-width);
-  min-height: 100vh;
+  height: 100%;
+  min-height: 100%;
   padding: var(--spacing-lg);
 
   background-color: var(--color-white);
   border-right: 1px solid var(--color-border);
+
+  transition: width 0.3s ease;
 }
 
 /* =========================================================
@@ -55,6 +58,60 @@
   color: var(--color-text-muted);
   font-size: 12px;
   font-weight: 500;
+}
+
+.sidebar-brand-collapsed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 40px;
+
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.sidebar-brand-collapsed .brand-name {
+  color: var(--color-black);
+}
+
+.sidebar-brand-collapsed .brand-symbol {
+  color: var(--color-primary);
+}
+
+/* =========================================================
+   BOTÓN COLAPSAR / EXPANDIR
+   ========================================================= */
+
+.sidebar-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 38px;
+  height: 38px;
+
+  margin-bottom: var(--spacing-md);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+
+  background: var(--color-white);
+
+  cursor: pointer;
+
+  transition: all var(--transition-fast);
+}
+
+.sidebar-toggle:hover {
+  border-color: var(--color-primary);
+  background-color: rgba(16, 212, 81, 0.08);
+}
+
+.sidebar-toggle i {
+  font-size: 18px;
 }
 
 /* =========================================================
@@ -185,6 +242,7 @@
 .navigation-icon i {
   font-size: 18px;
 }
+
 /* =========================================================
    ZONA INFERIOR Y CIERRE DE SESIÓN
    ========================================================= */
@@ -214,55 +272,11 @@
 }
 
 /* =========================================================
-   ADAPTACIÓN BÁSICA
+   ESTADO COLAPSADO
    ========================================================= */
-
-@media (max-width: 768px) {
-  .sidebar {
-    width: 220px;
-    padding: var(--spacing-md);
-  }
-
-  .sidebar-system-name,
-  .user-role {
-    font-size: 10px;
-  }
-}
-.sidebar {
-  transition: width 0.3s ease;
-}
 
 .sidebar--collapsed {
   width: 88px;
-}
-
-.sidebar-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 38px;
-  height: 38px;
-
-  margin-bottom: var(--spacing-md);
-
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-
-  background: var(--color-white);
-
-  cursor: pointer;
-
-  transition: all var(--transition-fast);
-}
-
-.sidebar-toggle:hover {
-  border-color: var(--color-primary);
-  background-color: rgba(16, 212, 81, 0.08);
-}
-
-.sidebar-toggle i {
-  font-size: 18px;
 }
 
 .sidebar--collapsed .sidebar-user {
@@ -278,23 +292,22 @@
   justify-content: center;
 }
 
-.sidebar-brand-collapsed {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 
-  width: 100%;
-  height: 40px;
+@media (max-width: 768px) {
+  .sidebar {
+    width: 220px;
+    padding: var(--spacing-md);
+  }
 
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-}
+  .sidebar--collapsed {
+    width: 88px;
+  }
 
-.sidebar-brand-collapsed .brand-name {
-  color: var(--color-black);
-}
-
-.sidebar-brand-collapsed .brand-symbol {
-  color: var(--color-primary);
+  .sidebar-system-name,
+  .user-role {
+    font-size: 10px;
+  }
 }
