@@ -40,7 +40,7 @@
 }
 
 .btn-back:hover {
-  background: #f1f5f3;
+  border-color: var(--color-primary);
 }
 
 .btn-new {
@@ -99,7 +99,7 @@
 }
 
 .search-control:focus {
-  border-color: #d7dee8;
+  border-color: var(--color-primary);
 }
 
 .search-button {
@@ -114,7 +114,7 @@
 }
 
 .search-button:hover {
-  color: #061b33;
+  border-color: var(--color-primary);
 }
 
 .btn-clear-search {
@@ -128,7 +128,7 @@
 }
 
 .btn-clear-search:hover {
-  background: #f1f5f3;
+  border-color: var(--color-primary);
 }
 
 .status-message {
@@ -164,17 +164,18 @@
 
 .empresas-table th,
 .empresas-table td {
-  padding: 16px 18px;
-  border-bottom: 1px solid #edf1f0;
-  color: #000000;
-  font-size: 14px;
-  text-align: left;
-  white-space: nowrap;
+    padding: 16px 18px;
+    border-bottom: 1px solid #edf1f0;
+    color: #000000;
+    font-size: 14px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
 }
 
 .empresas-table th {
   background: #dfeee8;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .empresas-table tbody tr:last-child td {
@@ -192,37 +193,43 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 82px;
-  padding: 6px 10px;
-  border-radius: 999px;
+
+  padding: 4px 12px;
+
+  border-radius: var(--radius-pill);
+
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .status-active {
-  background: #dcfce7;
-  color: #166534;
+  background-color: rgba(16, 212, 81, 0.12);
+  color: #087D31;
 }
 
 .status-inactive {
-  background: #fee2e2;
-  color: #991b1b;
+  background-color: var(--color-gray-light);
+  color: var(--color-text-muted);
 }
 
-.btn-edit {
-  min-height: 32px;
-  padding: 0 12px;
-  border: 1px solid #c8d5e1;
-  border-radius: 8px;
-  background: #ffffff;
-  color: #061b33;
-  font-size: 13px;
-  font-weight: 700;
+.actions-cell {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.action-icon {
+  font-size: 1.1rem;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.btn-edit:hover {
-  background: #f1f5f9;
+.action-icon--edit {
+  color: #10C451;
+}
+
+.action-icon--edit:hover {
+  color: #0ea548;
+  transform: scale(1.15);
 }
 
 .paginator {
@@ -236,7 +243,7 @@
 .page-button {
   width: 38px;
   height: 36px;
-  border: 1px solid #edf1f0;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
   background: #ffffff;
   color: #94a3b8;
@@ -393,7 +400,9 @@
   }
 
   .empresas-toolbar h1 {
-    font-size: 28px;
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
   }
 
   .empresas-search-wrapper {

@@ -4,58 +4,33 @@
   </div>
 
   <div class="empresas-search-wrapper">
-    <button
-      class="btn-custom btn-back"
-      type="button"
-      (click)="volverAlPanelPrincipal()"
-    >
+    <button class="btn-custom btn-back" type="button" (click)="volverAlPanelPrincipal()">
       <span aria-hidden="true">←</span>
       Atrás
     </button>
 
     <div class="empresas-search-center">
       <div class="empresas-search-box">
-        <input
-          class="search-control"
-          type="text"
-          placeholder="Buscar"
-          [(ngModel)]="busqueda"
-          (keyup.enter)="buscarEmpresas()"
-        />
+        <input class="search-control" type="text" placeholder="Buscar" [(ngModel)]="busqueda"
+          (keyup.enter)="buscarEmpresas()" />
 
-        <button
-          class="search-button"
-          type="button"
-          aria-label="Buscar empresa"
-          (click)="buscarEmpresas()"
-        >
+        <button class="search-button" type="button" aria-label="Buscar empresa" (click)="buscarEmpresas()">
           <i class="bi bi-search"></i>
         </button>
       </div>
 
-      <button
-        class="btn-custom btn-clear-search"
-        type="button"
-        (click)="limpiarBusqueda()"
-      >
+      <button class="btn-custom btn-clear-search" type="button" (click)="limpiarBusqueda()">
         Limpiar
       </button>
     </div>
 
-    <button
-      class="btn-custom btn-new"
-      type="button"
-      (click)="abrirModalCrear()"
-    >
+    <button class="btn-custom btn-new" type="button" (click)="abrirModalCrear()">
       <span aria-hidden="true">+</span>
       Nuevo
     </button>
   </div>
 
-  <p
-    *ngIf="mensaje !== ''"
-    class="status-message"
-  >
+  <p *ngIf="mensaje !== ''" class="status-message">
     {{ mensaje }}
   </p>
 
@@ -93,9 +68,9 @@
           <tr *ngIf="!cargando && empresas.length === 0">
             <td colspan="16" class="empty-table">
               {{
-                busqueda
-                  ? 'No se encontraron empresas con el criterio de búsqueda.'
-                  : 'Aún no se han cargado empresas.'
+              busqueda
+              ? 'No se encontraron empresas con el criterio de búsqueda.'
+              : 'Aún no se han cargado empresas.'
               }}
             </td>
           </tr>
@@ -113,31 +88,24 @@
             <td>{{ empresa.moneda }}</td>
             <td>{{ empresa.usuarioCreacion }}</td>
             <td>{{ empresa.fechaCreacion | date: 'yyyy-MM-dd HH:mm' }}</td>
-            <td>{{ empresa.usuarioModificacion || '-' }}</td>
+            <td>{{ empresa.usuarioModificacion || "—" }}</td>
             <td>
               {{
-                empresa.fechaModificacion
-                  ? (empresa.fechaModificacion | date: 'yyyy-MM-dd HH:mm')
-                  : '-'
+              empresa.fechaModificacion
+              ? (empresa.fechaModificacion | date: 'yyyy-MM-dd HH:mm')
+              : "—"
               }}
             </td>
             <td>
-              <span
-                class="status-badge"
-                [class.status-active]="empresa.estado"
-                [class.status-inactive]="!empresa.estado"
-              >
+              <span class="status-badge" [class.status-active]="empresa.estado"
+                [class.status-inactive]="!empresa.estado">
                 {{ obtenerTextoEstado(empresa.estado) }}
               </span>
             </td>
-            <td>
-              <button
-                class="btn-edit"
-                type="button"
-                (click)="abrirModalEditar(empresa)"
-              >
-                Editar
-              </button>
+            <td class="actions-cell">
+              <i class="bi bi-pencil-square action-icon action-icon--edit" (click)="abrirModalEditar(empresa)"
+                title="Editar">
+              </i>
             </td>
           </tr>
         </tbody>
@@ -145,12 +113,7 @@
     </div>
 
     <div class="paginator">
-      <button
-        class="page-button"
-        type="button"
-        [disabled]="pagina <= 1 || cargando"
-        (click)="paginaAnterior()"
-      >
+      <button class="page-button" type="button" [disabled]="pagina <= 1 || cargando" (click)="paginaAnterior()">
         «
       </button>
 
@@ -158,41 +121,26 @@
         {{ pagina }}
       </span>
 
-      <button
-        class="page-button"
-        type="button"
-        [disabled]="!tienePaginaSiguiente || cargando"
-        (click)="paginaSiguiente()"
-      >
+      <button class="page-button" type="button" [disabled]="!tienePaginaSiguiente || cargando"
+        (click)="paginaSiguiente()">
         »
       </button>
     </div>
   </div>
 
-  <div
-    class="modal-backdrop-custom"
-    *ngIf="mostrarModal"
-  >
+  <div class="modal-backdrop-custom" *ngIf="mostrarModal">
     <div class="modal-card">
       <div class="modal-header-custom">
         <h2>
           {{ modoFormulario === 'crear' ? 'Crear empresa' : 'Editar empresa' }}
         </h2>
 
-        <button
-          class="modal-close"
-          type="button"
-          aria-label="Cerrar modal"
-          (click)="cancelarModal()"
-        >
+        <button class="modal-close" type="button" aria-label="Cerrar modal" (click)="cancelarModal()">
           ×
         </button>
       </div>
 
-      <p
-        *ngIf="mensajeFormulario !== ''"
-        class="form-message"
-      >
+      <p *ngIf="mensajeFormulario !== ''" class="form-message">
         {{ mensajeFormulario }}
       </p>
 
@@ -200,100 +148,57 @@
         <div class="form-grid">
           <label>
             Nit
-            <input
-              type="text"
-              [(ngModel)]="formularioEmpresa.nit"
-              name="nit"
-            />
+            <input type="text" [(ngModel)]="formularioEmpresa.nit" name="nit" />
           </label>
 
           <label>
             Razón Social
-            <input
-              type="text"
-              [(ngModel)]="formularioEmpresa.razonSocial"
-              name="razonSocial"
-            />
+            <input type="text" [(ngModel)]="formularioEmpresa.razonSocial" name="razonSocial" />
           </label>
 
           <label>
             Dirección
-            <input
-              type="text"
-              [(ngModel)]="formularioEmpresa.direccion"
-              name="direccion"
-            />
+            <input type="text" [(ngModel)]="formularioEmpresa.direccion" name="direccion" />
           </label>
 
           <label>
             Cliente
-            <input
-              type="text"
-              [(ngModel)]="formularioEmpresa.cliente"
-              name="cliente"
-            />
+            <input type="text" [(ngModel)]="formularioEmpresa.cliente" name="cliente" />
           </label>
 
           <label>
             Teléfono
-            <input
-              type="text"
-              [(ngModel)]="formularioEmpresa.telefono"
-              name="telefono"
-            />
+            <input type="text" [(ngModel)]="formularioEmpresa.telefono" name="telefono" />
           </label>
 
           <label>
             Comercial Positivo
-            <input
-              type="text"
-              [(ngModel)]="formularioEmpresa.comercialPositivo"
-              name="comercialPositivo"
-            />
+            <input type="text" [(ngModel)]="formularioEmpresa.comercialPositivo" name="comercialPositivo" />
           </label>
 
           <label>
             Supervisor
-            <input
-              type="text"
-              [(ngModel)]="formularioEmpresa.supervisor"
-              name="supervisor"
-            />
+            <input type="text" [(ngModel)]="formularioEmpresa.supervisor" name="supervisor" />
           </label>
 
           <label>
             CR
-            <input
-              type="text"
-              [(ngModel)]="formularioEmpresa.cr"
-              name="cr"
-            />
+            <input type="text" [(ngModel)]="formularioEmpresa.cr" name="cr" />
           </label>
 
           <label>
             Ciudad
-            <input
-              type="text"
-              [(ngModel)]="formularioEmpresa.ciudad"
-              name="ciudad"
-            />
+            <input type="text" [(ngModel)]="formularioEmpresa.ciudad" name="ciudad" />
           </label>
 
           <label>
             Moneda
-            <input
-              type="text"
-              [(ngModel)]="formularioEmpresa.moneda"
-              name="moneda"
-            />
+            <input type="text" [(ngModel)]="formularioEmpresa.moneda" name="moneda" />
           </label>
 
           <label *ngIf="modoFormulario === 'editar'">
             Estado
-            <select
-              [(ngModel)]="formularioEmpresa.estado"
-              name="estado"
-            >
+            <select [(ngModel)]="formularioEmpresa.estado" name="estado">
               <option [ngValue]="true">Activo</option>
               <option [ngValue]="false">Inactivo</option>
             </select>
@@ -301,20 +206,11 @@
         </div>
 
         <div class="modal-actions">
-          <button
-            class="btn-custom btn-cancel"
-            type="button"
-            (click)="cancelarModal()"
-          >
+          <button class="btn-custom btn-cancel" type="button" (click)="cancelarModal()">
             Cancelar
           </button>
 
-          <button
-            class="btn-custom btn-accept"
-            type="button"
-            [disabled]="guardando"
-            (click)="guardarEmpresa()"
-          >
+          <button class="btn-custom btn-accept" type="button" [disabled]="guardando" (click)="guardarEmpresa()">
             {{ guardando ? 'Guardando...' : 'Aceptar' }}
           </button>
         </div>
