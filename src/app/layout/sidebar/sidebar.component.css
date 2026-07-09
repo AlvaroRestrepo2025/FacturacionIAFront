@@ -39,7 +39,7 @@
   align-items: center;
   gap: 5px;
 
-  font-size: 19px;
+  font-size: clamp(16px, 1vw, 19px);
   font-weight: 800;
   letter-spacing: -0.03em;
 }
@@ -136,8 +136,8 @@
   justify-content: center;
   flex-shrink: 0;
 
-  width: 42px;
-  height: 42px;
+  width: clamp(36px, 2.5vw, 42px);
+  height: clamp(36px, 2.5vw, 42px);
 
   background-color: var(--color-primary);
   border-radius: 50%;
@@ -240,7 +240,7 @@
 }
 
 .navigation-icon i {
-  font-size: 18px;
+  font-size: clamp(16px, 1vw, 18px);
 }
 
 /* =========================================================
@@ -274,9 +274,24 @@
 /* =========================================================
    ESTADO COLAPSADO
    ========================================================= */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 220px;
+    padding: var(--spacing-md);
+  }
+
+  .sidebar-system-name,
+  .user-role {
+    font-size: 10px;
+  }
+}
+
+.sidebar {
+  transition: width 0.3s ease;
+}
 
 .sidebar--collapsed {
-  width: 88px;
+  width: var(--sidebar-width-collapsed);
 }
 
 .sidebar--collapsed .sidebar-user {

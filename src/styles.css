@@ -55,8 +55,8 @@
   --spacing-xl: 32px;
 
   /* Layout */
-  --sidebar-width: 260px;
-  --header-height: 64px;
+  --sidebar-width: clamp(220px, 16vw, 260px);
+  --sidebar-width-collapsed: clamp(72px, 5vw, 88px);
 
   /* Transiciones */
   --transition-fast: 0.2s ease;
