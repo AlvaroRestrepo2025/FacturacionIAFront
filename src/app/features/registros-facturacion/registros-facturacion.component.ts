@@ -3,7 +3,6 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
-  OnDestroy,
   OnInit,
   ViewChild,
   inject
@@ -13,11 +12,12 @@ import { Router } from '@angular/router';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
-import { RegistroFacturacion } from '../../shared/models/registro-facturacion.model';
-import { RegistroFacturacionListadoResponse } from '../../shared/models/registro-facturacion-listado-response.model';
+import { AlertService } from '../../core/services/alert.service';
 import { RegistroFacturacionService } from '../../core/services/registros-facturacion.service';
 import { ExportarRegistrosFacturacionRequest } from '../../shared/models/exportar-registros-facturacion-request.model';
+import { RegistroFacturacion } from '../../shared/models/registro-facturacion.model';
 import { RegistroFacturacionExportarResponse } from '../../shared/models/registro-facturacion-exportar-response.model';
+import { RegistroFacturacionListadoResponse } from '../../shared/models/registro-facturacion-listado-response.model';
 
 @Component({
   selector: 'app-registros-facturacion',
@@ -26,11 +26,10 @@ import { RegistroFacturacionExportarResponse } from '../../shared/models/registr
   templateUrl: './registros-facturacion.component.html',
   styleUrl: './registros-facturacion.component.css'
 })
-export class RegistrosFacturacionComponent implements OnInit, AfterViewInit, OnDestroy {
+export class RegistrosFacturacionComponent implements OnInit, AfterViewInit {
   private readonly registrosService = inject(RegistroFacturacionService);
+  private readonly alert = inject(AlertService);
   private readonly router = inject(Router);
-
-  private mensajeTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
   @ViewChild('checkboxSeleccionTodos')
   checkboxSeleccionTodos?: ElementRef<HTMLInputElement>;
@@ -51,21 +50,7 @@ export class RegistrosFacturacionComponent implements OnInit, AfterViewInit, OnD
 
   seleccionados: number[] = [];
 
-  mostrarModalMensaje = false;
-  tituloModal = '';
-  detalleModal = '';
-
   ordenNumero: 'asc' | 'desc' = 'asc';
-
-  private readonly monedasConfig: Record<
-    string,
-    { code: string; symbol: string; locale: string }
-  > = {
-    COP: { code: 'COP', symbol: '$', locale: 'es-CO' },
-    USD: { code: 'USD', symbol: 'US$', locale: 'en-US' },
-    PEN: { code: 'PEN', symbol: 'S/', locale: 'es-PE' },
-    SOL: { code: 'PEN', symbol: 'S/', locale: 'es-PE' }
-  };
 
   ngOnInit(): void {
     this.consultar(false);
@@ -75,17 +60,12 @@ export class RegistrosFacturacionComponent implements OnInit, AfterViewInit, OnD
     this.actualizarEstadoCheckboxPrincipal();
   }
 
-  ngOnDestroy(): void {
-    this.limpiarTemporizadorMensaje();
-  }
-
-  consultar(mostrarMensajeConsulta = true): void {
+  consultar(
+    mostrarMensajeConsulta = true,
+    tipoConsulta: 'consultar' | 'limpiar' = 'consultar'
+  ): void {
     this.cargando = true;
-
-    if (!mostrarMensajeConsulta) {
-      this.limpiarMensaje();
-    }
-
+    this.limpiarMensaje();
     this.limpiarSeleccionInterna();
 
     this.registrosService
@@ -106,20 +86,45 @@ export class RegistrosFacturacionComponent implements OnInit, AfterViewInit, OnD
             response?.cantidadRegistros ?? this.cantidadRegistros;
           this.cargando = false;
 
-          if (mostrarMensajeConsulta && response?.mensaje) {
-            this.mostrarMensajeTemporal(response.mensaje);
+          this.mensaje =
+            response?.mensaje ||
+            (
+              this.registros.length === 0
+                ? 'No hay registros para mostrar.'
+                : ''
+            );
+
+          if (mostrarMensajeConsulta) {
+            if (tipoConsulta === 'limpiar') {
+              this.alert.info(
+                'Se restableció el listado de registros de facturación.',
+                'Filtros limpiados'
+              );
+            } else {
+              this.alert.info(
+                response?.mensaje ||
+                  'La consulta de registros de facturación se realizó correctamente.',
+                'Consulta realizada'
+              );
+            }
           }
 
           setTimeout(() => this.actualizarEstadoCheckboxPrincipal());
         },
-        error: () => {
+        error: (error) => {
           this.registros = [];
           this.totalRegistros = 0;
           this.cargando = false;
 
-          this.mostrarMensajeTemporal(
-            'No fue posible consultar los registros para facturación.',
-            7000
+          this.mensaje =
+            'No fue posible consultar los registros de facturación.';
+
+          this.alert.error(
+            this.obtenerMensajeError(
+              error,
+              'No fue posible consultar los registros de facturación. Por favor, comunícate con el administrador.'
+            ),
+            'Error'
           );
 
           setTimeout(() => this.actualizarEstadoCheckboxPrincipal());
@@ -133,7 +138,7 @@ export class RegistrosFacturacionComponent implements OnInit, AfterViewInit, OnD
     this.fechaInicio = '';
     this.fechaFin = '';
     this.pagina = 1;
-    this.consultar(true);
+    this.consultar(true, 'limpiar');
   }
 
   paginaAnterior(): void {
@@ -274,9 +279,9 @@ export class RegistrosFacturacionComponent implements OnInit, AfterViewInit, OnD
 
   exportarSeleccionados(): void {
     if (this.seleccionados.length === 0) {
-      this.abrirModal(
-        'Exportación de registros',
-        'Debe seleccionar al menos un registro.'
+      this.alert.warning(
+        'Debe seleccionar al menos un registro.',
+        'Exportación de registros'
       );
       return;
     }
@@ -290,9 +295,9 @@ export class RegistrosFacturacionComponent implements OnInit, AfterViewInit, OnD
         const registrosExportar = response?.registrosFacturacion ?? [];
 
         if (!response?.exito || registrosExportar.length === 0) {
-          this.abrirModal(
-            'Exportación de registros',
-            response?.mensaje || 'No se encontraron registros para exportar.'
+          this.alert.warning(
+            response?.mensaje || 'No se encontraron registros para exportar.',
+            'Exportación de registros'
           );
           return;
         }
@@ -345,56 +350,40 @@ export class RegistrosFacturacionComponent implements OnInit, AfterViewInit, OnD
 
         saveAs(blob, `RegistrosFacturacion_${fechaTexto}.xlsx`);
 
-        this.abrirModal(
-          'Exportación de registros',
-          'El archivo Excel fue generado correctamente.'
+        this.alert.success(
+          'El archivo Excel fue generado correctamente.',
+          'Exportación realizada'
         );
       },
-      error: () => {
-        this.abrirModal(
-          'Exportación de registros',
-          'No fue posible obtener los registros para exportación.'
+      error: (error) => {
+        this.alert.error(
+          this.obtenerMensajeError(
+            error,
+            'No fue posible obtener los registros para exportación. Por favor, comunícate con el administrador.'
+          ),
+          'Error'
         );
       }
     });
   }
 
-  abrirModal(titulo: string, mensaje: string): void {
-    this.tituloModal = titulo;
-    this.detalleModal = mensaje;
-    this.mostrarModalMensaje = true;
-  }
-
-  cerrarModal(): void {
-    this.mostrarModalMensaje = false;
-    this.tituloModal = '';
-    this.detalleModal = '';
-  }
-
-  private mostrarMensajeTemporal(
-    mensaje: string,
-    duracionMs = 5000
-  ): void {
-    this.limpiarTemporizadorMensaje();
-
-    this.mensaje = mensaje;
-
-    this.mensajeTimeoutId = setTimeout(() => {
-      this.mensaje = '';
-      this.mensajeTimeoutId = null;
-    }, duracionMs);
-  }
-
   private limpiarMensaje(): void {
-    this.limpiarTemporizadorMensaje();
     this.mensaje = '';
   }
 
-  private limpiarTemporizadorMensaje(): void {
-    if (this.mensajeTimeoutId) {
-      clearTimeout(this.mensajeTimeoutId);
-      this.mensajeTimeoutId = null;
+  private obtenerMensajeError(
+    error: any,
+    mensajePorDefecto: string
+  ): string {
+    if (error?.error?.mensaje) {
+      return error.error.mensaje;
     }
+
+    if (typeof error?.error === 'string') {
+      return error.error;
+    }
+
+    return mensajePorDefecto;
   }
 
   get tienePaginaSiguiente(): boolean {

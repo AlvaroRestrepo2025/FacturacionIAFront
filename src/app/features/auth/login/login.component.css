@@ -327,3 +327,107 @@
 
 
 }
+
+/*==================================================*
+ * ESTILOS UNIFICADOS - CAMPOS Y BOTONES LOGIN
+ *==================================================*/
+
+:host input,
+:host select {
+  width: 100%;
+  min-height: 44px;
+
+  padding: 0 14px;
+
+  border: 1px solid #cfd9e3;
+  border-radius: 14px;
+
+  background: #ffffff;
+  color: #061b33;
+
+  font-size: 14px;
+
+  outline: none;
+  box-sizing: border-box;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+:host input:hover,
+:host select:hover {
+  border-color: #10d451;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(16, 212, 81, 0.18);
+}
+
+:host input:focus,
+:host select:focus,
+:host input:focus-visible,
+:host select:focus-visible {
+  border-color: #10d451;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(16, 212, 81, 0.18);
+}
+
+:host input:disabled,
+:host select:disabled {
+  cursor: not-allowed;
+  background-color: #f1f5f9;
+  color: #94a3b8;
+  box-shadow: none;
+}
+
+:host button[type="submit"],
+:host .btn-login,
+:host .login-button,
+:host .btn-ingresar {
+  min-height: 44px;
+
+  padding: 0 24px;
+
+  border: 1px solid #00d452;
+  border-radius: 999px;
+
+  background: #00d452;
+  color: #000000;
+
+  font-size: 14px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+:host button[type="submit"]:hover,
+:host .btn-login:hover,
+:host .login-button:hover,
+:host .btn-ingresar:hover {
+  border-color: #10d451;
+  background: #00c94e;
+  box-shadow: 0 0 0 3px rgba(16, 212, 81, 0.18);
+}
+
+:host button[type="submit"]:active,
+:host .btn-login:active,
+:host .login-button:active,
+:host .btn-ingresar:active {
+  transform: scale(0.98);
+}
+
+:host button[type="submit"]:disabled,
+:host .btn-login:disabled,
+:host .login-button:disabled,
+:host .btn-ingresar:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+  box-shadow: none;
+  transform: none;
+}
