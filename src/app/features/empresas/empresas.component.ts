@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import {
   Component,
-  OnDestroy,
   OnInit,
   inject
 } from '@angular/core';
@@ -9,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { Moneda } from '../../core/models/moneda.model';
+import { AlertService } from '../../core/services/alert.service';
 import { EmpresaService } from '../../core/services/empresa.service';
 import { MonedaService } from '../../core/services/moneda.service';
 import { ActualizarEmpresaRequest } from '../../shared/models/actualizar-empresa-request.model';
@@ -22,19 +22,16 @@ import { Empresa } from '../../shared/models/empresa.model';
   templateUrl: './empresas.component.html',
   styleUrl: './empresas.component.css'
 })
-export class EmpresasComponent implements OnInit, OnDestroy {
+export class EmpresasComponent implements OnInit {
   private readonly empresaService = inject(EmpresaService);
   private readonly monedaService = inject(MonedaService);
+  private readonly alert = inject(AlertService);
   private readonly router = inject(Router);
-
-  private mensajeTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
   empresas: Empresa[] = [];
   monedas: Moneda[] = [];
 
   busqueda = '';
-  mensaje = '';
-  mensajeFormulario = '';
 
   pagina = 1;
   cantidadRegistros = 10;
@@ -67,10 +64,6 @@ export class EmpresasComponent implements OnInit, OnDestroy {
     this.cargarEmpresas(false);
   }
 
-  ngOnDestroy(): void {
-    this.limpiarTemporizadorMensaje();
-  }
-
   cargarMonedas(): void {
     this.cargandoMonedas = true;
 
@@ -89,29 +82,29 @@ export class EmpresasComponent implements OnInit, OnDestroy {
         }
 
         this.monedas = [];
-        this.mostrarMensajeTemporal(
+
+        this.alert.warning(
           response.mensaje || 'No fue posible cargar las monedas.',
-          7000
+          'Advertencia'
         );
       },
       error: () => {
         this.cargandoMonedas = false;
         this.monedas = [];
 
-        this.mostrarMensajeTemporal(
-          'No fue posible cargar las monedas. Verifica que el backend esté en ejecución.',
-          7000
+        this.alert.error(
+          'No fue posible cargar las monedas. Por favor, comunícate con el administrador.',
+          'Error'
         );
       }
     });
   }
 
-  cargarEmpresas(mostrarMensajeConsulta = false): void {
+  cargarEmpresas(
+    mostrarMensajeConsulta = false,
+    tipoConsulta: 'buscar' | 'limpiar' = 'buscar'
+  ): void {
     this.cargando = true;
-
-    if (!mostrarMensajeConsulta) {
-      this.limpiarMensaje();
-    }
 
     this.empresaService.listarEmpresas(
       this.busqueda,
@@ -125,8 +118,20 @@ export class EmpresasComponent implements OnInit, OnDestroy {
         this.cantidadRegistros = response.cantidadRegistros;
         this.cargando = false;
 
-        if (mostrarMensajeConsulta && response.mensaje) {
-          this.mostrarMensajeTemporal(response.mensaje);
+        if (mostrarMensajeConsulta) {
+          if (tipoConsulta === 'limpiar') {
+            this.alert.info(
+              'Se restableció el listado de empresas.',
+              'Búsqueda limpiada'
+            );
+
+            return;
+          }
+
+          this.alert.info(
+            response.mensaje || 'La consulta de empresas se realizó correctamente.',
+            'Consulta realizada'
+          );
         }
       },
       error: () => {
@@ -134,9 +139,9 @@ export class EmpresasComponent implements OnInit, OnDestroy {
         this.totalRegistros = 0;
         this.cargando = false;
 
-        this.mostrarMensajeTemporal(
-          'No fue posible cargar las empresas. Verifica que el backend esté en ejecución.',
-          7000
+        this.alert.error(
+          'No fue posible cargar las empresas. Por favor, comunícate con el administrador.',
+          'Error'
         );
       }
     });
@@ -144,13 +149,13 @@ export class EmpresasComponent implements OnInit, OnDestroy {
 
   buscarEmpresas(): void {
     this.pagina = 1;
-    this.cargarEmpresas(true);
+    this.cargarEmpresas(true, 'buscar');
   }
 
   limpiarBusqueda(): void {
     this.busqueda = '';
     this.pagina = 1;
-    this.cargarEmpresas(true);
+    this.cargarEmpresas(true, 'limpiar');
   }
 
   paginaAnterior(): void {
@@ -173,7 +178,6 @@ export class EmpresasComponent implements OnInit, OnDestroy {
 
   abrirModalCrear(): void {
     this.modoFormulario = 'crear';
-    this.mensajeFormulario = '';
     this.mostrarModal = true;
 
     this.formularioEmpresa = {
@@ -194,7 +198,6 @@ export class EmpresasComponent implements OnInit, OnDestroy {
 
   abrirModalEditar(empresa: Empresa): void {
     this.modoFormulario = 'editar';
-    this.mensajeFormulario = '';
     this.mostrarModal = true;
 
     this.formularioEmpresa = {
@@ -215,58 +218,86 @@ export class EmpresasComponent implements OnInit, OnDestroy {
 
   cancelarModal(): void {
     this.mostrarModal = false;
-    this.mensajeFormulario = '';
     this.guardando = false;
   }
 
   guardarEmpresa(): void {
+    if (this.guardando) {
+      return;
+    }
+
     const errorValidacion = this.validarFormulario();
 
     if (errorValidacion) {
-      this.mensajeFormulario = errorValidacion;
+      this.alert.warning(
+        errorValidacion,
+        'Campos obligatorios'
+      );
+
       return;
     }
 
     this.guardando = true;
-    this.mensajeFormulario = '';
 
     if (this.modoFormulario === 'crear') {
-      const request: CrearEmpresaRequest = {
-        nit: this.formularioEmpresa.nit.trim(),
-        razonSocial: this.formularioEmpresa.razonSocial.trim(),
-        direccion: this.formularioEmpresa.direccion.trim(),
-        cliente: this.formularioEmpresa.cliente.trim(),
-        telefono: this.formularioEmpresa.telefono.trim(),
-        comercialPositivo: this.formularioEmpresa.comercialPositivo.trim(),
-        supervisor: this.formularioEmpresa.supervisor.trim(),
-        cr: this.formularioEmpresa.cr.trim(),
-        ciudad: this.formularioEmpresa.ciudad.trim(),
-        moneda: this.formularioEmpresa.moneda.trim(),
-        usuarioCreacion: 'UsuarioTemporalHU005'
-      };
-
-      this.empresaService.crearEmpresa(request).subscribe({
-        next: (response) => {
-          this.guardando = false;
-          this.mensajeFormulario = response.mensaje;
-
-          if (response.exito) {
-            const mensajeExito = response.mensaje || 'Empresa creada correctamente.';
-
-            this.mostrarModal = false;
-            this.cargarEmpresas(false);
-            this.mostrarMensajeTemporal(mensajeExito);
-          }
-        },
-        error: () => {
-          this.guardando = false;
-          this.mensajeFormulario = 'No fue posible crear la empresa. Verifica que el backend esté en ejecución.';
-        }
-      });
-
+      this.crearEmpresa();
       return;
     }
 
+    this.actualizarEmpresa();
+  }
+
+  private crearEmpresa(): void {
+    const request: CrearEmpresaRequest = {
+      nit: this.formularioEmpresa.nit.trim(),
+      razonSocial: this.formularioEmpresa.razonSocial.trim(),
+      direccion: this.formularioEmpresa.direccion.trim(),
+      cliente: this.formularioEmpresa.cliente.trim(),
+      telefono: this.formularioEmpresa.telefono.trim(),
+      comercialPositivo: this.formularioEmpresa.comercialPositivo.trim(),
+      supervisor: this.formularioEmpresa.supervisor.trim(),
+      cr: this.formularioEmpresa.cr.trim(),
+      ciudad: this.formularioEmpresa.ciudad.trim(),
+      moneda: this.formularioEmpresa.moneda.trim(),
+      usuarioCreacion: 'UsuarioTemporalHU005'
+    };
+
+    this.empresaService.crearEmpresa(request).subscribe({
+      next: (response) => {
+        this.guardando = false;
+
+        if (response.exito) {
+          this.mostrarModal = false;
+          this.cargarEmpresas(false);
+
+          this.alert.success(
+            response.mensaje || 'La empresa fue creada correctamente.',
+            'Empresa creada'
+          );
+
+          return;
+        }
+
+        this.alert.warning(
+          response.mensaje || 'No fue posible crear la empresa.',
+          'Advertencia'
+        );
+      },
+      error: (error) => {
+        this.guardando = false;
+
+        this.alert.error(
+          this.obtenerMensajeError(
+            error,
+            'No fue posible crear la empresa. Por favor, comunícate con el administrador.'
+          ),
+          'Error'
+        );
+      }
+    });
+  }
+
+  private actualizarEmpresa(): void {
     const request: ActualizarEmpresaRequest = {
       idEmpresa: this.formularioEmpresa.idEmpresa,
       nit: this.formularioEmpresa.nit.trim(),
@@ -289,19 +320,34 @@ export class EmpresasComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (response) => {
         this.guardando = false;
-        this.mensajeFormulario = response.mensaje;
 
         if (response.exito) {
-          const mensajeExito = response.mensaje || 'Los cambios han sido guardados correctamente.';
-
           this.mostrarModal = false;
           this.cargarEmpresas(false);
-          this.mostrarMensajeTemporal(mensajeExito);
+
+          this.alert.success(
+            response.mensaje || 'Los cambios fueron guardados correctamente.',
+            'Empresa actualizada'
+          );
+
+          return;
         }
+
+        this.alert.warning(
+          response.mensaje || 'No fue posible actualizar la empresa.',
+          'Advertencia'
+        );
       },
-      error: () => {
+      error: (error) => {
         this.guardando = false;
-        this.mensajeFormulario = 'No fue posible actualizar la empresa. Verifica que el backend esté en ejecución.';
+
+        this.alert.error(
+          this.obtenerMensajeError(
+            error,
+            'No fue posible actualizar la empresa. Por favor, comunícate con el administrador.'
+          ),
+          'Error'
+        );
       }
     });
   }
@@ -366,30 +412,19 @@ export class EmpresasComponent implements OnInit, OnDestroy {
     return 'COP';
   }
 
-  private mostrarMensajeTemporal(
-    mensaje: string,
-    duracionMs = 5000
-  ): void {
-    this.limpiarTemporizadorMensaje();
-
-    this.mensaje = mensaje;
-
-    this.mensajeTimeoutId = setTimeout(() => {
-      this.mensaje = '';
-      this.mensajeTimeoutId = null;
-    }, duracionMs);
-  }
-
-  private limpiarMensaje(): void {
-    this.limpiarTemporizadorMensaje();
-    this.mensaje = '';
-  }
-
-  private limpiarTemporizadorMensaje(): void {
-    if (this.mensajeTimeoutId) {
-      clearTimeout(this.mensajeTimeoutId);
-      this.mensajeTimeoutId = null;
+  private obtenerMensajeError(
+    error: any,
+    mensajePorDefecto: string
+  ): string {
+    if (error?.error?.mensaje) {
+      return error.error.mensaje;
     }
+
+    if (typeof error?.error === 'string') {
+      return error.error;
+    }
+
+    return mensajePorDefecto;
   }
 
   get tienePaginaSiguiente(): boolean {
