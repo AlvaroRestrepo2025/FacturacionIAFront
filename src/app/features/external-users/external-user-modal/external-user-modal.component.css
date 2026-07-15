@@ -97,7 +97,9 @@
     box-shadow var(--transition-fast);
 }
 
-.form-input:focus {
+.form-input:hover,
+.form-input:focus,
+.form-input:focus-visible {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(16, 212, 81, 0.18);
 }

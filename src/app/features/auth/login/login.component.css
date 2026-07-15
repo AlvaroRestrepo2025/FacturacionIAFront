@@ -23,8 +23,8 @@
   display: flex;
   align-items: center;
 
-  min-height: 76px;
-  padding: 0 24px;
+  height: 60px;
+  padding: 0 20px;
 
   background-color: #a1adad;
 }
@@ -33,22 +33,21 @@
 .brand-logo {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 5px;
 }
 
 
 .brand-text {
-  color: #000000;
-  font-size: 34px;
+  color: #000;
+  font-size: 26px;
   font-weight: 900;
   line-height: 1;
-  letter-spacing: -1px;
+  letter-spacing: -0.8px;
 }
-
 
 .brand-plus {
   color: #10d451;
-  font-size: 34px;
+  font-size: 26px;
   font-weight: 900;
   line-height: 1;
 }
@@ -181,10 +180,11 @@
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  gap: 24px;
 
-  min-height: 82px;
-  padding: 18px 32px;
+  gap: 16px;
+
+  height: 58px;
+  padding: 8px 24px;
 
   background-color: #a1adad;
 }
@@ -198,12 +198,14 @@
 }
 
 
-.footer-brand-text,
-.footer-brand-plus {
-  color: #000000;
-  font-size: 28px;
+.footer-brand-text {
+  font-size: 22px;
   font-weight: 900;
-  line-height: 1;
+}
+
+.footer-brand-plus {
+  font-size: 16px;
+  font-weight: 900;
 }
 
 
@@ -225,8 +227,8 @@
   align-items: center;
   justify-content: center;
 
-  width: 35px;
-  height: 35px;
+  width: 30px;
+  height: 30px;
 
   background-color: #f0f0f0;
   border-radius: 50%;
@@ -242,8 +244,8 @@
 
 
 .footer-social svg {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
 
   fill: #555555;
   transition: transform 0.3s ease, fill 0.3s ease;
@@ -268,13 +270,12 @@
 
 
 .footer-tech span {
-  font-size: 15px;
+  font-size: 13px;
   line-height: 1.1;
 }
 
-
 .footer-tech small {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 800;
 }
 
@@ -283,20 +284,47 @@
 @media (max-width: 768px) {
 
   .login-header-bar {
+    height: 54px;
+    padding: 0 16px;
     justify-content: center;
   }
 
-
   .brand-text,
   .brand-plus {
-    font-size: 30px;
+    font-size: 22px;
   }
-
 
   .login-footer {
     grid-template-columns: 1fr;
-    gap: 14px;
-    text-align: center;
+    gap: 10px;
+    height: auto;
+    padding: 12px 16px;
+  }
+
+  .footer-brand-text {
+    font-size: 18px;
+  }
+
+  .footer-brand-plus {
+    font-size: 14px;
+  }
+
+  .footer-social a {
+    width: 28px;
+    height: 28px;
+  }
+
+  .footer-social svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .footer-tech span {
+    font-size: 12px;
+  }
+
+  .footer-tech small {
+    font-size: 8px;
   }
 
 }

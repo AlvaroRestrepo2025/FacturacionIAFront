@@ -11,22 +11,20 @@
 
     <div class="empresas-search-center">
       <div class="empresas-search-box">
-        <input
-          class="search-control"
-          type="text"
-          placeholder="Buscar"
-          [(ngModel)]="busqueda"
-          (keyup.enter)="buscarEmpresas()"
-        />
 
-        <button
-          class="search-button"
-          type="button"
-          aria-label="Buscar empresa"
-          (click)="buscarEmpresas()"
-        >
-          <i class="bi bi-search"></i>
-        </button>
+        <input class="search-control" type="text" placeholder="Buscar" [(ngModel)]="busqueda"
+          (ngModelChange)="onSearchChange()" />
+
+        <span class="search-input__icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+
+          </svg>
+        </span>
+
       </div>
 
       <button class="btn-custom btn-clear-search" type="button" (click)="limpiarBusqueda()">
@@ -74,9 +72,9 @@
           <tr *ngIf="!cargando && empresas.length === 0">
             <td colspan="16" class="empty-table">
               {{
-                busqueda
-                  ? 'No se encontraron empresas con el criterio de búsqueda.'
-                  : 'Aún no se han cargado empresas.'
+              busqueda
+              ? 'No se encontraron empresas con el criterio de búsqueda.'
+              : 'Aún no se han cargado empresas.'
               }}
             </td>
           </tr>
@@ -97,43 +95,31 @@
             <td>{{ empresa.usuarioModificacion || '—' }}</td>
             <td>
               {{
-                empresa.fechaModificacion
-                  ? (empresa.fechaModificacion | date: 'yyyy-MM-dd HH:mm')
-                  : '—'
+              empresa.fechaModificacion
+              ? (empresa.fechaModificacion | date: 'yyyy-MM-dd HH:mm')
+              : '—'
               }}
             </td>
             <td>
-              <span
-                class="status-badge"
-                [class.status-active]="empresa.estado"
-                [class.status-inactive]="!empresa.estado"
-              >
+              <span class="status-badge" [class.status-active]="empresa.estado"
+                [class.status-inactive]="!empresa.estado">
                 {{ obtenerTextoEstado(empresa.estado) }}
               </span>
             </td>
             <td class="actions-cell">
-  <button
-    class="action-button action-button--edit"
-    type="button"
-    (click)="abrirModalEditar(empresa)"
-    aria-label="Editar empresa"
-  >
-    <i class="bi bi-pencil-square"></i>
-    <span class="action-tooltip">Editar</span>
-  </button>
-</td>
+              <button class="action-button action-button--edit" type="button" (click)="abrirModalEditar(empresa)"
+                aria-label="Editar empresa">
+                <i class="bi bi-pencil-square"></i>
+                <span class="action-tooltip">Editar</span>
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="paginator">
-      <button
-        class="page-button"
-        type="button"
-        [disabled]="pagina <= 1 || cargando"
-        (click)="paginaAnterior()"
-      >
+      <button class="page-button" type="button" [disabled]="pagina <= 1 || cargando" (click)="paginaAnterior()">
         «
       </button>
 
@@ -141,12 +127,8 @@
         {{ pagina }}
       </span>
 
-      <button
-        class="page-button"
-        type="button"
-        [disabled]="!tienePaginaSiguiente || cargando"
-        (click)="paginaSiguiente()"
-      >
+      <button class="page-button" type="button" [disabled]="!tienePaginaSiguiente || cargando"
+        (click)="paginaSiguiente()">
         »
       </button>
     </div>
@@ -189,11 +171,7 @@
 
           <label>
             Comercial Positivo
-            <input
-              type="text"
-              [(ngModel)]="formularioEmpresa.comercialPositivo"
-              name="comercialPositivo"
-            />
+            <input type="text" [(ngModel)]="formularioEmpresa.comercialPositivo" name="comercialPositivo" />
           </label>
 
           <label>
@@ -213,23 +191,17 @@
 
           <label>
             Moneda
-            <select
-              [(ngModel)]="formularioEmpresa.moneda"
-              name="moneda"
-              [disabled]="cargandoMonedas || monedas.length === 0"
-            >
+            <select [(ngModel)]="formularioEmpresa.moneda" name="moneda"
+              [disabled]="cargandoMonedas || monedas.length === 0">
               <option value="" disabled>
                 {{
-                  cargandoMonedas
-                    ? 'Cargando monedas...'
-                    : 'Seleccione una moneda'
+                cargandoMonedas
+                ? 'Cargando monedas...'
+                : 'Seleccione una moneda'
                 }}
               </option>
 
-              <option
-                *ngFor="let moneda of monedas"
-                [value]="moneda.moneda"
-              >
+              <option *ngFor="let moneda of monedas" [value]="moneda.moneda">
                 {{ moneda.moneda }}
               </option>
             </select>
@@ -249,12 +221,8 @@
             Cancelar
           </button>
 
-          <button
-            class="btn-custom btn-accept"
-            type="button"
-            [disabled]="guardando || cargandoMonedas || monedas.length === 0"
-            (click)="guardarEmpresa()"
-          >
+          <button class="btn-custom btn-accept" type="button"
+            [disabled]="guardando || cargandoMonedas || monedas.length === 0" (click)="guardarEmpresa()">
             {{ guardando ? 'Guardando...' : 'Aceptar' }}
           </button>
         </div>

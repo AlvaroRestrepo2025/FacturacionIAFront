@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { Empresa } from '../../../shared/models/empresa.model';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-document-upload-modal',
@@ -56,6 +57,23 @@ export class DocumentUploadModalComponent implements OnInit {
     empresa: '',
     archivos: ''
   };
+
+  private mostrarAlerta(
+    titulo: string,
+    mensaje: string
+  ): void {
+
+    Swal.fire({
+      icon: 'warning',
+      title: titulo,
+      text: mensaje,
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: '#10d451',
+      allowOutsideClick: false,
+      allowEscapeKey: true
+    });
+
+  }
   ngOnInit(): void {
 
     console.log(this.form.idEmpresa);
@@ -116,7 +134,10 @@ export class DocumentUploadModalComponent implements OnInit {
 
     if (!file.name.toLowerCase().endsWith('.pdf')) {
 
-      alert(`El archivo "${file.name}" no es un PDF.`);
+      this.mostrarAlerta(
+        'Archivo no válido',
+        `El archivo "${file.name}" no es un PDF.`
+      );
 
       return false;
 
@@ -124,7 +145,10 @@ export class DocumentUploadModalComponent implements OnInit {
 
     if (file.size > 20 * 1024 * 1024) {
 
-      alert(`El archivo "${file.name}" supera los 20 MB permitidos.`);
+      this.mostrarAlerta(
+        'Tamaño excedido',
+        `El archivo "${file.name}" supera el límite de 20 MB permitido.`
+      );
 
       return false;
 
@@ -142,10 +166,9 @@ export class DocumentUploadModalComponent implements OnInit {
 
     if (total > 100 * 1024 * 1024) {
 
-      alert(
-
-        'El tamaño total de la carga no puede superar 100 MB.'
-
+      this.mostrarAlerta(
+        'Carga demasiado grande',
+        'El tamaño total de los documentos no puede superar los 100 MB.'
       );
 
       return false;

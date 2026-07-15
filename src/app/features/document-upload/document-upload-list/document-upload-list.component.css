@@ -83,7 +83,9 @@
     box-shadow var(--transition-fast);
 }
 
-.search-input:focus {
+.search-input:hover,
+.search-input:focus,
+.search-input:focus-visible {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(16, 212, 81, 0.18);
 }
@@ -123,12 +125,19 @@
 }
 
 .eu-table tbody tr {
-  border-bottom: 1px solid #f1f3f5;
-  transition: background 0.15s;
+  border-bottom: 1px solid #edf1f0;
+
+  transition:
+    background-color .2s ease,
+    box-shadow .2s ease;
 }
 
-.eu-table tbody tr:hover {
-  background-color: #f8fafc;
+.eu-table tbody tr:hover td {
+  background-color: #f0fdf4;
+}
+
+.eu-table tbody tr:hover td:first-child {
+  box-shadow: inset 4px 0 0 #00d452;
 }
 
 .eu-table tbody tr:last-child {
@@ -179,18 +188,45 @@
 }
 
 .action-icon {
-  font-size: 1.1rem;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 36px;
+
+  border: 1px solid transparent;
+  border-radius: 999px;
+
   cursor: pointer;
-  transition: all 0.2s ease;
+
+  transition:
+      background-color .2s ease,
+      border-color .2s ease,
+      box-shadow .2s ease,
+      transform .2s ease;
+
 }
 
 .action-icon--edit {
-  color: #10C451;
+
+  color: #00b84f;
+
 }
 
 .action-icon--edit:hover {
-  color: #0ea548;
-  transform: scale(1.15);
+
+  background: rgba(16,212,81,.12);
+
+  border-color: #10d451;
+
+  color: #087d31;
+
+  box-shadow: 0 0 0 3px rgba(16,212,81,.18);
+
+  transform: scale(1.05);
+
 }
 
 .paginator {
@@ -216,7 +252,13 @@
 }
 
 .paginator__btn:hover:not(:disabled) {
-  background-color: #f3f4f6;
+
+    border-color: #10d451;
+
+    box-shadow: 0 0 0 3px rgba(16,212,81,.18);
+
+    background: #ffffff;
+
 }
 
 .paginator__btn--active {
@@ -245,18 +287,24 @@
   max-width: 700px;
 }
 
-.action-icon--process{
+.action-icon--process {
 
-color:#0d6efd;
+    color: #0d6efd;
 
-margin-left:12px;
+    margin-left: 8px;
 
 }
 
-.action-icon--process:hover{
+.action-icon--process:hover {
 
-transform:scale(1.15);
+    background: rgba(13,110,253,.12);
 
-color:#0a58ca;
+    border-color: #0d6efd;
+
+    color: #0a58ca;
+
+    box-shadow: 0 0 0 3px rgba(13,110,253,.18);
+
+    transform: scale(1.05);
 
 }

@@ -68,22 +68,20 @@
    ========================================================= */
 
 .main-layout-body {
-  flex: 1 1 auto;
-
-  display: flex;
-  align-items: stretch;
-
-  width: 100%;
-  min-height: 0;
-  overflow: hidden;
+    display:flex;
+    flex:1;
+    min-width:0;
+    min-height:0;
+    overflow:hidden;
 
   background-color: var(--color-surface);
 }
 
 /* Área donde se muestran las rutas internas */
 .main-content {
-  flex: 1 1 auto;
-  min-width: 0;
+   flex:1;
+    min-width:0;
+    overflow:auto;
   min-height: 0;
 
   background-color: var(--color-surface);

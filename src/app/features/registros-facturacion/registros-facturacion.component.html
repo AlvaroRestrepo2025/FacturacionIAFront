@@ -7,55 +7,66 @@
   </div>
 
   <!--==================================================
-  = BÚSQUEDA
-  ==================================================-->
-  <div class="registros-search-wrapper">
-    <button
-      class="btn-custom btn-back"
-      type="button"
-      (click)="volverAlPanelPrincipal()"
-    >
-      <span aria-hidden="true">←</span>
-      Atrás
-    </button>
+= BÚSQUEDA
+==================================================-->
+<div class="registros-search-wrapper">
 
-    <div class="registros-search-center">
-      <div class="registros-search-box">
-        <input
-          class="search-control"
-          type="text"
-          placeholder="Buscar"
-          [(ngModel)]="busqueda"
-          (keyup.enter)="consultar()"
-        />
+  <button
+    class="btn-custom btn-back"
+    type="button"
+    (click)="volverAlPanelPrincipal()">
+    <span aria-hidden="true">←</span>
+    Atrás
+  </button>
 
-        <button
-          class="search-button"
-          type="button"
-          aria-label="Buscar registros"
-          (click)="consultar()"
-        >
-          <i class="bi bi-search"></i>
-        </button>
-      </div>
+  <div class="registros-search-center">
 
-      <button
-        class="btn-custom btn-clear-search"
-        type="button"
-        (click)="limpiarFiltros()"
-      >
-        Limpiar
-      </button>
+    <div class="registros-search-box">
+
+      <input
+  class="search-control"
+  type="text"
+  placeholder="Buscar"
+  [(ngModel)]="busqueda"
+  (ngModelChange)="onSearchChange()" />
+
+      <span class="search-input__icon">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round">
+
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+
+        </svg>
+      </span>
+
     </div>
 
     <button
-      class="btn-custom btn-new"
+      class="btn-custom btn-clear-search"
       type="button"
-      (click)="exportarSeleccionados()"
-    >
-      Exportar
+      (click)="limpiarFiltros()">
+      Limpiar
     </button>
+
   </div>
+
+  <button
+    class="btn-custom btn-new"
+    type="button"
+    (click)="exportarSeleccionados()">
+    Exportar
+  </button>
+
+</div>
 
   <!--==================================================
   = FILTROS

@@ -103,7 +103,7 @@ export class RegistrosFacturacionComponent implements OnInit, AfterViewInit {
             } else {
               this.alert.info(
                 response?.mensaje ||
-                  'La consulta de registros de facturación se realizó correctamente.',
+                'La consulta de registros de facturación se realizó correctamente.',
                 'Consulta realizada'
               );
             }
@@ -130,6 +130,11 @@ export class RegistrosFacturacionComponent implements OnInit, AfterViewInit {
           setTimeout(() => this.actualizarEstadoCheckboxPrincipal());
         }
       });
+  }
+
+  onSearchChange(): void {
+    this.pagina = 1;
+    this.consultar(false);
   }
 
   limpiarFiltros(): void {
@@ -233,13 +238,13 @@ export class RegistrosFacturacionComponent implements OnInit, AfterViewInit {
 
       return this.ordenNumero === 'asc'
         ? numeroA.localeCompare(numeroB, undefined, {
-            numeric: true,
-            sensitivity: 'base'
-          })
+          numeric: true,
+          sensitivity: 'base'
+        })
         : numeroB.localeCompare(numeroA, undefined, {
-            numeric: true,
-            sensitivity: 'base'
-          });
+          numeric: true,
+          sensitivity: 'base'
+        });
     });
   }
 
@@ -344,9 +349,9 @@ export class RegistrosFacturacionComponent implements OnInit, AfterViewInit {
             .getMinutes()
             .toString()
             .padStart(2, '0')}${fecha
-            .getSeconds()
-            .toString()
-            .padStart(2, '0')}`;
+              .getSeconds()
+              .toString()
+              .padStart(2, '0')}`;
 
         saveAs(blob, `RegistrosFacturacion_${fechaTexto}.xlsx`);
 
