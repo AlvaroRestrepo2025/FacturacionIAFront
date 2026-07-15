@@ -147,9 +147,17 @@ export class EmpresasComponent implements OnInit {
     });
   }
 
-  buscarEmpresas(): void {
+  buscarEmpresas(mostrarMensaje: boolean = true): void {
     this.pagina = 1;
-    this.cargarEmpresas(true, 'buscar');
+    this.cargarEmpresas(mostrarMensaje, 'buscar');
+  }
+
+  onSearchChange(): void {
+
+    this.pagina = 1;
+
+    this.buscarEmpresas(false);
+
   }
 
   limpiarBusqueda(): void {

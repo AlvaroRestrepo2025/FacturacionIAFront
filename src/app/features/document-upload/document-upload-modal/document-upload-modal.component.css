@@ -103,9 +103,11 @@
     box-shadow var(--transition-fast);
 }
 
-.form-input:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(16, 212, 81, 0.18);
+.form-input:hover,
+.form-input:focus,
+.form-input:focus-visible {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(16,212,81,.18);
 }
 
 .form-input--error {
@@ -163,21 +165,36 @@
   margin-top: 10px;
 }
 
-.file-item{
+.file-item {
 
-    display:flex;
+    display: flex;
 
-    justify-content:space-between;
+    justify-content: space-between;
 
-    align-items:center;
+    align-items: center;
 
-    padding:10px 14px;
+    padding: 10px 14px;
 
-    background:white;
+    background: #ffffff;
 
-    border:1px solid var(--color-border);
+    border: 1px solid var(--color-border);
 
-    border-radius:10px;
+    border-radius: 10px;
+
+    transition:
+        background-color .2s ease,
+        border-color .2s ease,
+        box-shadow .2s ease;
+
+}
+
+.file-item:hover {
+
+    background: #f0fdf4;
+
+    border-color: #10d451;
+
+    box-shadow: 0 0 0 3px rgba(16,212,81,.10);
 
 }
 
@@ -202,29 +219,40 @@
   font-size: 18px;
 }
 
-.file-remove{
+.file-remove {
 
-    width:28px;
+    width: 28px;
 
-    height:28px;
+    height: 28px;
 
-    border:none;
+    border: none;
 
-    background:none;
+    background: none;
 
-    color:#b91c1c;
+    color: #b91c1c;
 
-    cursor:pointer;
+    cursor: pointer;
 
-    border-radius:50%;
+    border-radius: 50%;
 
-    transition:.2s;
+    transition:
+        background-color .2s ease,
+        box-shadow .2s ease,
+        transform .2s ease;
 
 }
 
-.file-remove:hover{
+.file-remove:hover {
 
-    background:#fee2e2;
+    background: #fee2e2;
+
+    box-shadow: 0 0 0 3px rgba(220,38,38,.12);
+
+}
+
+.file-remove:active {
+
+    transform: scale(.95);
 
 }
 
@@ -300,8 +328,13 @@ input[type="file"]::file-selector-button:hover {
 }
 
 .upload-box:hover {
-  border-color: var(--color-primary);
-  background: rgba(16, 212, 81, .05);
+
+    border-color: #10d451;
+
+    background: rgba(16,212,81,.05);
+
+    box-shadow: 0 0 0 3px rgba(16,212,81,.18);
+
 }
 
 .upload-icon {
@@ -404,4 +437,31 @@ input[type="file"]::file-selector-button:hover {
 .empresa-seleccionada{
     font-weight: 500;
     color: #000000;
+}
+
+/* ==========================================
+   NG-SELECT
+========================================== */
+
+::ng-deep .ng-select .ng-select-container {
+
+    min-height: 44px;
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-md);
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+
+}
+
+::ng-deep .ng-select:hover .ng-select-container,
+::ng-deep .ng-select.ng-select-focused .ng-select-container {
+
+    border-color: #10d451;
+
+    box-shadow: 0 0 0 3px rgba(16,212,81,.18);
+
 }

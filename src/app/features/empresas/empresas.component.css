@@ -97,7 +97,8 @@
 }
 
 .empresas-search-box {
-  display: flex;
+  position: relative;
+
   width: 390px;
   max-width: 100%;
   min-height: 44px;
@@ -105,7 +106,6 @@
   border: 1px solid #d7dee8;
   border-radius: 14px;
   background: #ffffff;
-  overflow: hidden;
 
   transition:
     border-color 0.2s ease,
@@ -115,42 +115,41 @@
 .search-control {
   width: 100%;
   min-height: 44px;
-  padding: 0 14px;
+
+  padding: 0 42px 0 14px;
 
   border: none;
   background: transparent;
-  color: #061b33;
 
+  color: #061b33;
   font-size: 14px;
+
   outline: none;
+  box-sizing: border-box;
 }
 
-.search-button {
-  min-width: 52px;
-  min-height: 44px;
+.search-input__icon {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
 
-  border: none;
-  background: transparent;
-  color: #9aa5b1;
-
-  cursor: pointer;
-
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  justify-content: center;
 
-  transition: color 0.2s ease;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.search-input__icon svg {
+  width: 16px;
+  height: 16px;
 }
 
 .empresas-search-box:hover,
 .empresas-search-box:focus-within {
   border-color: #10d451;
   box-shadow: 0 0 0 3px rgba(16, 212, 81, 0.18);
-}
-
-.empresas-search-box:hover .search-button,
-.empresas-search-box:focus-within .search-button {
-  color: #64748b;
 }
 
 .btn-clear-search {
